@@ -1,44 +1,59 @@
 package models
 
-// import "time"
+import "time"
 
-// type User struct {
-// 	Id          string    `json:"id"`
-// 	FirstName   string    `json:"first_name"`
-// 	LastName    string    `json:"last_name"`
-// 	PhoneNumber string    `json:"phone_number"`
-// 	Password    string    `json:"password"`
-// 	CreatedAt   time.Time `json:"created_at"`
-// 	UpdatedAt   time.Time    `json:"updated_at"`
-// }
+type PrimaryKeyUUID struct {
+	Id string `json:"id"`
+}
 
-// type UserPrimaryKey struct {
-// 	Id           string `json:"id"`
-// 	Phone_number string `json:"phone_number"`
-// }
+type Comics struct {
+	Id          string    `json:"id"`
+	Title   string    `json:"first_name"`
+	Author    string    `json:"last_name"`
+	Description string    `json:"phone_number"`
+	Genre    string    `json:"password"`
+	ReleaseDate string `json:"release_date"`
+	PopularityScore string `json:"popularity_score"`
+	PosterUrl string `json:"poster_url"`
+	Price string `json:"price"`
+	IsActive string `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+}
 
-// type CreateUser struct {
-// 	FirstName   string `json:"first_name"`
-// 	LastName    string `json:"last_name"`
-// 	PhoneNumber string `json:"phone_number"`
-// 	Password    string `json:"password"`
-// }
 
-// type UpdateUser struct {
-// 	Id          string `json:"id"`
-// 	FirstName   string `json:"first_name"`
-// 	LastName    string `json:"last_name"`
-// 	PhoneNumber string `json:"phone_number"`
-// 	Password    string `json:"password"`
-// }
+type CreateComics struct {
+	Title   string    `json:"first_name"`
+	Author    string    `json:"last_name"`
+	Description string    `json:"phone_number"`
+	Genre    string    `json:"password"`
+	ReleaseDate string `json:"release_date"`
+	PopularityScore string `json:"popularity_score"`
+	PosterUrl string `json:"poster_url"`
+	Price string `json:"price"`
+	IsActive string `json:"is_active"`
+}
 
-// type GetListUserRequest struct {
-// 	Offset int    `json:"offset"`
-// 	Limit  int    `json:"limit"`
-// 	Search string `json:"search"`
-// }
+type UpdateComics struct {
+	Id          string    `json:"id"`
+	Title   string    `json:"first_name"`
+	Author    string    `json:"last_name"`
+	Description string    `json:"phone_number"`
+	Genre    string    `json:"password"`
+	ReleaseDate string `json:"release_date"`
+	PopularityScore string `json:"popularity_score"`
+	PosterUrl string `json:"poster_url"`
+	Price string `json:"price"`
+	IsActive string `json:"is_active"`
+}
 
-// type GetListUserResponse struct {
-// 	Count int     `json:"count"`
-// 	Users []*User `json:"users"`
-// }
+type GetListComicsRequest struct {
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
+	Search string `json:"search"`
+}
+
+type GetListComicsResponse struct {
+	Count int     `json:"count"`
+	Comics []*Comics `json:"comics"`
+}

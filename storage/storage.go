@@ -11,6 +11,8 @@ type StorageRepoI interface {
 	Permission() PermissionRepoI
 	RolePermission() RolePermissionRepoI
 	UserRole() UserRoleRepoI
+	Comics() ComicRepoI
+	Order() OrderRepoI
 	CloseDB()
 }
 
@@ -55,15 +57,27 @@ type RoleRepoI interface {
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 
-
-
-
-
 type ComicRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
+	Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKeyUUID, error)
+	GetByID(ctx context.Context, req *models.PrimaryKeyUUID) (*models.Comics, error)
+	GetList(ctx context.Context, req *models.GetListComicsRequest) (resp *models.GetListComicsResponse, err error)
+	Update(ctx context.Context, req *models.UpdateComics) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKeyUUID) (int64, error)
+}
+
+type OrderRepoI interface {
+	Create(ctx context.Context, req *models.CreateOrder) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Order, error)
+	GetList(ctx context.Context, req *models.GetListOrderRequest) (resp *models.GetListOrderResponse, err error)
+	Update(ctx context.Context, req *models.UpdateOrder) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type OrderItemRepoI interface {
+	Create(ctx context.Context, req *models.CreateOrderItem) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.OrderItem, error)
+	GetList(ctx context.Context, req *models.GetListOrderItemRequest) (resp *models.GetListOrderItemResponse, err error)
+	Update(ctx context.Context, req *models.UpdateOrderItem) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 

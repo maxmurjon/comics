@@ -16,6 +16,8 @@ type Store struct {
 	permission storage.PermissionRepoI
 	userRole   storage.UserRoleRepoI
 	rolePermission storage.RolePermissionRepoI
+	comics storage.ComicRepoI
+	order storage.OrderRepoI
 }
 
 func NewPostgres(psqlConnString string) storage.StorageRepoI {
@@ -81,4 +83,22 @@ func (s *Store) RolePermission() storage.RolePermissionRepoI {
 		}
 	}
 	return s.rolePermission
+}
+
+func (s *Store) Comics() storage.ComicRepoI {
+	if s.comics == nil {
+		s.comics = &comicsRepo{
+			db: s.db,
+		}
+	}
+	return s.comics
+}
+
+func (s *Store) Order() storage.OrderRepoI {
+	if s.order == nil {
+		s.order = &orderRepo{
+			db: s.db,
+		}
+	}
+	return s.order
 }
