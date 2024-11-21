@@ -1,5 +1,5 @@
 # Build step (builder stage)
-FROM golang:1.23.1-alpine3.16 AS builder
+FROM golang:1.23.1-alpine AS builder  # Golang versiyasini Alpine bilan ishlatish
 
 # Application directory in the container
 RUN mkdir /app
