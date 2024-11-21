@@ -13,6 +13,9 @@ type StorageRepoI interface {
 	UserRole() UserRoleRepoI
 	Comics() ComicRepoI
 	Order() OrderRepoI
+	OrderItem() OrderItemRepoI
+	ComicReview() ComicReviewRepoI
+	ComicsPages() ComicPageRepoI 
 	CloseDB()
 }
 
@@ -42,7 +45,7 @@ type RolePermissionRepoI interface {
 }
 
 type UserRoleRepoI interface {
-	Create(ctx context.Context, req *models.CreateUserRole) (error)
+	Create(ctx context.Context, req *models.CreateUserRole) error
 	GetByID(ctx context.Context, req string) (*models.UserRole, error)
 	GetList(ctx context.Context, req *models.GetListUserRoleRequest) (resp *models.GetListUserRoleResponse, err error)
 	Update(ctx context.Context, req *models.UpdateUserRole) (int64, error)
@@ -58,11 +61,27 @@ type RoleRepoI interface {
 }
 
 type ComicRepoI interface {
-	Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKeyUUID, error)
-	GetByID(ctx context.Context, req *models.PrimaryKeyUUID) (*models.Comics, error)
+	Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Comics, error)
 	GetList(ctx context.Context, req *models.GetListComicsRequest) (resp *models.GetListComicsResponse, err error)
 	Update(ctx context.Context, req *models.UpdateComics) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKeyUUID) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type ComicPageRepoI interface {
+	Create(ctx context.Context, req *models.CreateComicsPages) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsPages, error)
+	GetList(ctx context.Context, req *models.GetListComicsPagesRequest) (resp *models.GetListComicsPagesResponse, err error)
+	Update(ctx context.Context, req *models.UpdateComicsPages) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type ComicReviewRepoI interface {
+	Create(ctx context.Context, req *models.CreateComicsReview) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsReview, error)
+	GetList(ctx context.Context, req *models.GetListComicsReviewRequest) (resp *models.GetListComicsReviewResponse, err error)
+	Update(ctx context.Context, req *models.UpdateComicsReview) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 
 type OrderRepoI interface {
@@ -89,15 +108,6 @@ type PurchaseRepoI interface {
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 
-type ComicPageRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-
 type DiscountRepoI interface {
 	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
 	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
@@ -105,7 +115,6 @@ type DiscountRepoI interface {
 	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
-
 
 type PromotionRepoI interface {
 	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)

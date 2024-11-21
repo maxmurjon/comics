@@ -49,7 +49,27 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/userrole/:id", h.GetUserRolesByIDHandler)
 	r.DELETE("/deleteuserrole/:id", h.DeleteUserRole)
 
+	// Comics endpoints
+	r.POST("/createcomics", h.CreateComics)
+	r.PUT("/updatecomic", h.UpdateComics)
+	r.GET("/comics", h.GetComicssList)
+	r.GET("/comic/:id", h.GetComicssByIDHandler)
+	r.DELETE("/deletecomic/:id", h.DeleteComics)
 
+	// Order endpoints
+	r.POST("/createorder", h.CreateOrder)
+	r.PUT("/updateorder", h.UpdateOrder)
+	r.GET("/orders", h.GetOrdersList)
+	r.GET("/order/:id", h.GetOrdersByIDHandler)
+	r.DELETE("/deleteorder/:id", h.DeleteOrder)
+
+
+	// Order Item endpoints
+	r.POST("/createorderitem", h.CreateOrderItem)
+	r.PUT("/updateorderitem", h.UpdateOrderItem)
+	r.GET("/orderitems", h.GetOrderItemsList)
+	r.GET("/orderitem/:id", h.GetOrderItemsByIDHandler)
+	r.DELETE("/deleteorderitem/:id", h.DeleteOrderItem)
 	
 }
 

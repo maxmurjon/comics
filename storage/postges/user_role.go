@@ -143,7 +143,7 @@ func (u *userRoleRepo) Update(ctx context.Context, req *models.UpdateUserRole) (
 
 // Delete deletes a userRole from the userRoles table by its ID.
 func (u *userRoleRepo) Delete(ctx context.Context, req *models.PrimaryKey) (int64, error) {
-	query := `DELETE FROM user_roles WHERE id = $1`
+	query := `DELETE FROM user_roles WHERE role_id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)
 	if err != nil {

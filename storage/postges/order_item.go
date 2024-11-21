@@ -13,14 +13,14 @@ type orderItemRepo struct {
 }
 
 func (u *orderItemRepo) Create(ctx context.Context, req *models.CreateOrderItem) (*models.PrimaryKey, error) {
-	query := `INSERT INTO order_item(
+	query := `INSERT INTO order_items(
 		order_id,
 		comic_id,
 		quantity,
 		price
 	) VALUES ($1, $2, $3, $4)`
 
-	status,err := u.db.Exec(ctx, query,
+	_,err := u.db.Exec(ctx, query,
 		req.OrderId,
 		req.ComicId,
 		req.Quantity,
@@ -28,7 +28,7 @@ func (u *orderItemRepo) Create(ctx context.Context, req *models.CreateOrderItem)
 	)
 
 	pKey := &models.PrimaryKey{
-		Id: int(status.RowsAffected()),
+		Id: req.OrderId,
 	}
 
 	return pKey, err
@@ -44,9 +44,9 @@ func (u *orderItemRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*m
 			quantity,
 			price
         FROM
-            "order_item"
+            "order_items"
         WHERE
-            id = $1`
+            order_id = $1`
 
 	err := u.db.QueryRow(ctx, query, req.Id).Scan(
 		&res.OrderId,
@@ -71,10 +71,8 @@ func (u *orderItemRepo) GetList(ctx context.Context, req *models.GetListOrderIte
 			quantity,
 			price
 		FROM
-			"order_item"`
+			"order_items"`
 	filter := " WHERE 1=1"
-	orderItem := " order_item BY created_at"
-	arrangement := " DESC"
 	offset := " OFFSET 0"
 	limit := " LIMIT 10"
 
@@ -93,7 +91,7 @@ func (u *orderItemRepo) GetList(ctx context.Context, req *models.GetListOrderIte
 		limit = " LIMIT :limit"
 	}
 
-	cQ := `SELECT count(1) FROM "order_item"` + filter
+	cQ := `SELECT count(1) FROM "order_items"` + filter
 	cQ, arr = helper.ReplaceQueryParams(cQ, params)
 	err := u.db.QueryRow(ctx, cQ, arr...).Scan(
 		&res.Count,
@@ -102,7 +100,7 @@ func (u *orderItemRepo) GetList(ctx context.Context, req *models.GetListOrderIte
 		return res, err
 	}
 
-	q := query + filter + orderItem + arrangement + offset + limit
+	q := query + filter + offset + limit
 
 	q, arr = helper.ReplaceQueryParams(q, params)
 	rows, err := u.db.Query(ctx, q, arr...)
@@ -132,14 +130,13 @@ func (u *orderItemRepo) GetList(ctx context.Context, req *models.GetListOrderIte
 }
 
 func (u *orderItemRepo) Update(ctx context.Context, req *models.UpdateOrderItem) (id int64, err error) {
-	query := `UPDATE "orderItems" SET
+	query := `UPDATE "order_items" SET
 		order_id=:order_id,
 		comic_id=:comic_id,
 		quantity=:quantity,
-		price=:price,
-		updated_at=now()
+		price=:price
 	WHERE
-		id = :id`
+		order_id = :order_id`
 
 	params := map[string]interface{}{
 		"order_id":     req.OrderId,
@@ -160,7 +157,7 @@ func (u *orderItemRepo) Update(ctx context.Context, req *models.UpdateOrderItem)
 }
 
 func (u *orderItemRepo) Delete(ctx context.Context, req *models.PrimaryKey) (id int64, err error) {
-	query := `DELETE FROM "order_item" WHERE id = $1`
+	query := `DELETE FROM "order_items" WHERE order_id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)
 	if err != nil {

@@ -4,8 +4,7 @@ import (
 	"comics/models"
 	"comics/pkg/helper/helper"
 	"context"
-
-	"github.com/google/uuid"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -14,15 +13,11 @@ type comicsRepo struct {
 	db *pgxpool.Pool
 }
 
-func (u *comicsRepo) Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKeyUUID, error) {
-
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
+func (u *comicsRepo) Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKey, error) {
+	fmt.Println(req)
+	var id int
 
 	query := `INSERT INTO comics(
-		id,
 		title,
 		author,
 		description,
@@ -34,10 +29,9 @@ func (u *comicsRepo) Create(ctx context.Context, req *models.CreateComics) (*mod
 		is_active,
 		created_at,
 		updated_at 
-	) VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9,$10 now(), now()	)`
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), now()) RETURNING id`
 
-	_, err = u.db.Exec(ctx, query,
-		uuid.String(),
+	err := u.db.QueryRow(ctx, query,
 		req.Title,
 		req.Author,
 		req.Description,
@@ -47,17 +41,16 @@ func (u *comicsRepo) Create(ctx context.Context, req *models.CreateComics) (*mod
 		req.PosterUrl,
 		req.Price,
 		req.IsActive,
-	)
+	).Scan(&id)
 
-	pKey := &models.PrimaryKeyUUID{
-		Id: uuid.String(),
+	pKey := &models.PrimaryKey{
+		Id: id,
 	}
 
 	return pKey, err
-
 }
 
-func (u *comicsRepo) GetByID(ctx context.Context, req *models.PrimaryKeyUUID) (*models.Comics, error) {
+func (u *comicsRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Comics, error) {
 	res := &models.Comics{}
 	query := `
         SELECT
@@ -186,7 +179,7 @@ func (u *comicsRepo) GetList(ctx context.Context, req *models.GetListComicsReque
 }
 
 func (u *comicsRepo) Update(ctx context.Context, req *models.UpdateComics) (id int64, err error) {
-	query := `UPDATE "comicss" SET
+	query := `UPDATE "comics" SET
 		title =:title,
 		author =:author,
 		description =:description,
@@ -201,16 +194,16 @@ func (u *comicsRepo) Update(ctx context.Context, req *models.UpdateComics) (id i
 		id = :id`
 
 	params := map[string]interface{}{
-		"id":            req.Id,
-		"title": req.Title,
-		"author": req.Author,
-		"description": req.Description,
-		"genre": req.Genre,
-		"release_date": req.ReleaseDate,
+		"id":               req.Id,
+		"title":            req.Title,
+		"author":           req.Author,
+		"description":      req.Description,
+		"genre":            req.Genre,
+		"release_date":     req.ReleaseDate,
 		"popularity_score": req.PopularityScore,
-		"poster_url": req.PosterUrl,
-		"price": req.Price,
-		"is_active": req.IsActive,
+		"poster_url":       req.PosterUrl,
+		"price":            req.Price,
+		"is_active":        req.IsActive,
 	}
 
 	q, arr := helper.ReplaceQueryParams(query, params)
@@ -224,7 +217,7 @@ func (u *comicsRepo) Update(ctx context.Context, req *models.UpdateComics) (id i
 	return rowsAffected, err
 }
 
-func (u *comicsRepo) Delete(ctx context.Context, req *models.PrimaryKeyUUID) (id int64, err error) {
+func (u *comicsRepo) Delete(ctx context.Context, req *models.PrimaryKey) (id int64, err error) {
 	query := `DELETE FROM "comics" WHERE id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)

@@ -46,13 +46,13 @@ func (h *Handler) Register(c *gin.Context) {
 		})
 		return
 	}
-	err = h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id, RoleId: 2})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Error assigning role to user: " + err.Error(),
-		})
-		return
-	}
+	// err = h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id, RoleId: 2})
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, models.DefaultError{
+	// 		Message: "Error assigning role to user: " + err.Error(),
+	// 	})
+	// 	return
+	// }
 
 	user, err := h.strg.User().GetByID(context.Background(), userId)
 	if err != nil {
@@ -104,7 +104,6 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-
 	data := map[string]interface{}{
 		"id":           resp.Id,
 		"first_name":   resp.FirstName,
@@ -113,7 +112,7 @@ func (h *Handler) Login(c *gin.Context) {
 		"password":     resp.Password,
 		"created_at":   resp.CreatedAt,
 		"updated_at":   resp.UpdatedAt,
-		"role":role,
+		"role":         role,
 	}
 
 	token, err := helper.GenerateJWT(data, config.TimeExpiredAt, h.cfg.SekretKey)

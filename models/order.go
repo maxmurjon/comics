@@ -5,8 +5,8 @@ import "time"
 type Order struct {
 	Id         int       `json:"id"`
 	UserId     string    `json:"user_id"`
-	OrderDate  string    `json:"order_date"`
-	TotalPrice string    `json:"total_price"`
+	OrderDate  time.Time    `json:"order_date"`
+	TotalPrice float32    `json:"total_price"`
 	Status     string    `json:"status"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -14,16 +14,16 @@ type Order struct {
 
 type CreateOrder struct {
 	UserId     string `json:"user_id"`
-	OrderDate  string `json:"order_date"`
-	TotalPrice string `json:"total_price"`
+	OrderDate  time.Time `json:"order_date"`
+	TotalPrice float32 `json:"total_price"`
 	Status     string `json:"status"`
 }
 
 type UpdateOrder struct {
 	Id         int       `json:"id"`
 	UserId     string    `json:"user_id"`
-	OrderDate  string    `json:"order_date"`
-	TotalPrice string    `json:"total_price"`
+	OrderDate  time.Time    `json:"order_date"`
+	TotalPrice float32    `json:"total_price"`
 	Status     string    `json:"status"`
 }
 

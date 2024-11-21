@@ -1,7 +1,7 @@
 package models
 
 type Permission struct {
-	Id             string `json:"id"`
+	Id             int `json:"id"`
 	PermissionName string `json:"permission_name"`
 	Description string `json:"description"`
 }
@@ -12,7 +12,7 @@ type CreatePermission struct {
 }
 
 type UpdatePermission struct {
-	Id             string `json:"id"`
+	Id             int `json:"id"`
 	PermissionName string `json:"permission_name"`
 	Description string `json:"description"`
 }

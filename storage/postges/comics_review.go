@@ -8,27 +8,27 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type orderRepo struct {
+type comicsReviewRepo struct {
 	db *pgxpool.Pool
 }
 
-func (u *orderRepo) Create(ctx context.Context, req *models.CreateOrder) (*models.PrimaryKey, error) {
+func (u *comicsReviewRepo) Create(ctx context.Context, req *models.CreateComicsReview) (*models.PrimaryKey, error) {
 	var id int
 
-	query := `INSERT INTO orders(
+	query := `INSERT INTO comics_review(
+		comic_id,
 		user_id,
-		order_date,
-		total_price,
-		status,
+		rating,
+		review,
 		created_at,
 		updated_at 
-	) VALUES ($1, $2, $3, $4,now(), now()) RETURNING id`
+	) VALUES ($1, $2, $3, $4, now(), now()) RETURNING id`
 
 	err := u.db.QueryRow(ctx, query,
+		req.ComicId,
 		req.UserId,
-		req.OrderDate,
-		req.TotalPrice,
-		req.Status,
+		req.Rating,
+		req.Review,
 	).Scan(&id)
 
 	pKey := &models.PrimaryKey{
@@ -36,33 +36,32 @@ func (u *orderRepo) Create(ctx context.Context, req *models.CreateOrder) (*model
 	}
 
 	return pKey, err
-
 }
 
-func (u *orderRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Order, error) {
-	res := &models.Order{}
+func (u *comicsReviewRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsReview, error) {
+	res := &models.ComicsReview{}
 	query := `
         SELECT
             id,
+		comic_id,
 		user_id,
-		order_date,
-		total_price,
-		status,
+		rating,
+		review,
 		created_at,
 		updated_at 
         FROM
-            "orders"
+            "comics_review"
         WHERE
             id = $1`
 
 	err := u.db.QueryRow(ctx, query, req.Id).Scan(
 		&res.Id,
+		&res.ComicId,
 		&res.UserId,
-		&res.OrderDate,
-		&res.TotalPrice,
-		&res.Status,
-		&res.CreatedAt,
-		&res.UpdatedAt,
+		&res.Rating,
+		&res.Review,
+		&res.CreatedAt, // created_at as time.Time
+		&res.UpdatedAt, // updated_at as time.Time
 	)
 	if err != nil {
 		return res, err
@@ -71,20 +70,20 @@ func (u *orderRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*model
 	return res, nil
 }
 
-func (u *orderRepo) GetList(ctx context.Context, req *models.GetListOrderRequest) (*models.GetListOrderResponse, error) {
-	res := &models.GetListOrderResponse{}
+func (u *comicsReviewRepo) GetList(ctx context.Context, req *models.GetListComicsReviewRequest) (*models.GetListComicsReviewResponse, error) {
+	res := &models.GetListComicsReviewResponse{}
 	params := make(map[string]interface{})
 	var arr []interface{}
 	query := `SELECT
-		   id,
+		    id,
+		comic_id,
 		user_id,
-		order_date,
-		total_price,
-		status,
+		rating,
+		review,
 		created_at,
 		updated_at 
 	FROM
-		"orders"`
+		"comics_review"`
 	filter := " WHERE 1=1"
 	order := " ORDER BY created_at"
 	arrangement := " DESC"
@@ -106,7 +105,7 @@ func (u *orderRepo) GetList(ctx context.Context, req *models.GetListOrderRequest
 		limit = " LIMIT :limit"
 	}
 
-	cQ := `SELECT count(1) FROM "orders"` + filter
+	cQ := `SELECT count(1) FROM "comics_review"` + filter
 	cQ, arr = helper.ReplaceQueryParams(cQ, params)
 	err := u.db.QueryRow(ctx, cQ, arr...).Scan(
 		&res.Count,
@@ -125,44 +124,44 @@ func (u *orderRepo) GetList(ctx context.Context, req *models.GetListOrderRequest
 	defer rows.Close()
 
 	for rows.Next() {
-		obj := &models.Order{}
+		obj := &models.ComicsReview{}
 
 		err = rows.Scan(
 			&obj.Id,
+			&obj.ComicId,
 			&obj.UserId,
-			&obj.OrderDate,
-			&obj.TotalPrice,
-			&obj.Status,
-			&obj.CreatedAt, // created_at as time.Time
-			&obj.UpdatedAt, // updated_at as time.Time
+			&obj.Rating,
+			&obj.Review,
+			&obj.CreatedAt,
+			&obj.UpdatedAt,
 		)
 
 		if err != nil {
 			return res, err
 		}
 
-		res.Order = append(res.Order, obj)
+		res.ComicsReview = append(res.ComicsReview, obj)
 	}
 
 	return res, nil
 }
 
-func (u *orderRepo) Update(ctx context.Context, req *models.UpdateOrder) (id int64, err error) {
-	query := `UPDATE "orders" SET
-		user_id=:user_id,
-		order_date=:order_date,
-		total_price=:total_price,
-		status=:status,
+func (u *comicsReviewRepo) Update(ctx context.Context, req *models.UpdateComicsReview) (id int64, err error) {
+	query := `UPDATE "comics_review" SET
+		comic_id =:comic_id,
+		user_id =:user_id,
+		rating =:rating,
+		review =:review,
 		updated_at=now()
 	WHERE
 		id = :id`
 
 	params := map[string]interface{}{
-		"id":          req.Id,
-		"user_id":     req.UserId,
-		"order_date":  req.OrderDate,
-		"total_price": req.TotalPrice,
-		"status":      req.Status,
+		"id":               req.Id,
+		"comic_id":            req.ComicId,
+		"user_id":           req.UserId,
+		"rating":      req.Rating,
+		"review":            req.Review,
 	}
 
 	q, arr := helper.ReplaceQueryParams(query, params)
@@ -176,8 +175,8 @@ func (u *orderRepo) Update(ctx context.Context, req *models.UpdateOrder) (id int
 	return rowsAffected, err
 }
 
-func (u *orderRepo) Delete(ctx context.Context, req *models.PrimaryKey) (id int64, err error) {
-	query := `DELETE FROM "orders" WHERE id = $1`
+func (u *comicsReviewRepo) Delete(ctx context.Context, req *models.PrimaryKey) (id int64, err error) {
+	query := `DELETE FROM "comics_review" WHERE id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)
 	if err != nil {

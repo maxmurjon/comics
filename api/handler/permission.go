@@ -12,6 +12,7 @@ import (
 
 func (h *Handler) CreatePermission(c *gin.Context) {
 	var entity *models.CreatePermission
+	fmt.Println("1111")
 	if err := c.BindJSON(&entity); err != nil {
 		c.JSON(http.StatusBadRequest, models.DefaultError{
 			Message: "Invalid request body: " + err.Error(),
