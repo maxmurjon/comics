@@ -9,7 +9,7 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_IMAGE_NAME: comics
-  DOCKER_IMAGE_TAG: latest
+  DOCKER_IMAGE_TAG: build-${{ github.sha }}
   SERVER_HOST: 3.68.167.84
   SERVER_USERNAME: ubuntu
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -33,16 +33,16 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker buildx create --use --name mybuilder
-          docker buildx build --platform linux/amd64,linux/arm64 --push -t $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
+          docker buildx build --platform linux/amd64 --push -t $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
 
       - name: Deploy Docker image to server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ env.SERVER_HOST }}
           username: ${{ env.SERVER_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker stop comics || true
-            docker rm comics || true
+            docker rm -f comics || true
             docker image rm ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }} || true
             docker run -d --name comics -e POSTGRES_HOST=${{ env.DATABASE_HOST }} -e POSTGRES_USER=${{ env.DATABASE_USER }} -e POSTGRES_PASSWORD=${{ env.DATABASE_PASSWORD }} -p 8000:8000 ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
