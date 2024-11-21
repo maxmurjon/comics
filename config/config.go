@@ -43,7 +43,7 @@ type Postgres struct {
 
 func Load() *Config {
 	if err := godotenv.Load("./.env"); err != nil {
-		fmt.Println("NO .env file not found")
+		fmt.Println("NO .env file not foundd")
 	}
 
 	cfg := Config{}
