@@ -11,7 +11,7 @@ env:
   DOCKER_IMAGE_NAME: comics
   DOCKER_IMAGE_TAG: build-${{ github.sha }}
   SERVER_HOST: 3.68.167.84
-  SERVER_USERNAME: ubuntu
+  SERVER_USERNAME: comics
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
   DATABASE_USER: ${{ secrets.DATABASE_USER }}
