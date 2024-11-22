@@ -1,30 +1,24 @@
-# Build step (builder stage)
-FROM golang:1.23.3-alpine AS builder  # Using a valid tag
+# 1. Asosiy image ni tanlash
+FROM golang:1.23.3-alpine AS builder
 
-RUN mkdir /app
-
-# Copy Go modules and Go source code
-COPY go.mod go.sum /app/
+# 2. Ishchi katalogni yaratish va uni tanlash
 WORKDIR /app
 
-RUN go mod tidy
+# 3. Fayllarni container ichiga ko'chirish
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Copy the rest of the application code
-COPY . /app
-
-# Build the Go application
+# 4. Kodni ko'chirish va ilovani qurish
+COPY . .
 RUN go build -o main cmd/main.go
 
-# Final stage (runtime stage)
+# 5. Yengil image ni tayyorlash
 FROM alpine:3.16
-
 WORKDIR /app
+COPY --from=builder /app/main ./
 
-# Copy the compiled binary from the builder image
-COPY --from=builder /app/main /app/main
-
-# Set environment variable for configuration
+# 6. Muhit o'zgaruvchilarini o'rnatish
 ENV DOT_ENV_PATH=config/.env
 
-# Run the application
+# 7. Ilovani ishga tushirish
 CMD ["/app/main"]
