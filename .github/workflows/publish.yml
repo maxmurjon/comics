@@ -39,7 +39,7 @@ m
   deploy:
     needs: build
     run-on: self-hosted
-    steos:
+    steps:
       - name: Pull docker image
         run: docker pull maxmurjon/comics:latest
       - name: Delete old container
