@@ -6,12 +6,15 @@ WORKDIR /app
 
 # 3. Fayllarni container ichiga ko'chirish
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod tidy
 
 # 4. Kodni ko'chirish va ilovani qurish
 COPY . .
 RUN go build -o main cmd/main.go
 
+RUN chmod +x main
+
+EXPOSE 8080
 # 5. Yengil image ni tayyorlash
 FROM alpine:3.16
 WORKDIR /app
