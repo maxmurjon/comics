@@ -41,6 +41,6 @@ func main() {
 	r.Use(gin.Logger(), gin.Recovery())
 
 	api.SetUpAPI(r, *h, *cfg)
-	fmt.Println("Server running on port ")
+	fmt.Println("Server running on port 000")
 	r.Run(":8000")
 }
