@@ -42,5 +42,5 @@ func main() {
 
 	api.SetUpAPI(r, *h, *cfg)
 	fmt.Println("Server running on port ")
-	r.Run(":8080")
+	r.Run(":8000")
 }
