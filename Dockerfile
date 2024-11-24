@@ -1,27 +1,27 @@
-# 1. Asosiy image ni tanlash
-FROM golang:1.23.3-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
-# 2. Ishchi katalogni yaratish va uni tanlash
+# Ilova uchun ishchi katalog yaratish
+RUN mkdir /app
+
+# Hamma fayllarni nusxalash
+COPY . /app
+
+# Ishchi katalogni sozlash
 WORKDIR /app
 
-# 3. Fayllarni container ichiga ko'chirish
-COPY go.mod go.sum ./
-RUN go mod tidy
-
-# 4. Kodni ko'chirish va ilovani qurish
-COPY . .
+# Ilovani qurish
 RUN go build -o main cmd/main.go
 
-RUN chmod +x main
-
-EXPOSE 8080
-# 5. Yengil image ni tayyorlash
+# Minimal tasvir (alpine) yaratish
 FROM alpine:3.16
-WORKDIR /app
-COPY --from=builder /app/main ./
 
-# 6. Muhit o'zgaruvchilarini o'rnatish
+WORKDIR /app
+
+# Qurilgan ilovani nusxalash
+COPY --from=builder /app .
+
+# Konfiguratsiya fayli o'zgaruvchisi
 ENV DOT_ENV_PATH=config/.env
 
-# 7. Ilovani ishga tushirish
+# Ilovani ishga tushirish
 CMD ["/app/main"]

@@ -42,23 +42,23 @@ type Postgres struct {
 }
 
 func Load() *Config {
-	if err := godotenv.Load("./.env"); err != nil {
+	if err := godotenv.Load("config/.env"); err != nil {
 		fmt.Println("NO .env file not bilmadim foundd")
 	}
 
 	cfg := Config{}
-	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "localhost"))
+	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "3.68.167.84"))
 	cfg.Postgres = Postgres{
-		Host:     cast.ToString(getOrDefaultValue("POSTGRES_HOST", "localhost")),
+		Host:     cast.ToString(getOrDefaultValue("POSTGRES_HOST", "3.68.167.84")),
 		Port:     cast.ToInt(getOrDefaultValue("POSTGRES_PORT", "5432")),
-		User:     cast.ToString(getOrDefaultValue("POSTGRES_USER", "admin")),
-		Password: cast.ToString(getOrDefaultValue("POSTGRES_PASSWORD", "password")),
-		DataBase: cast.ToString(getOrDefaultValue("POSTGRES_DATABASE", "database"))}
+		User:     cast.ToString(getOrDefaultValue("POSTGRES_USER", "maxmurjon")),
+		Password: cast.ToString(getOrDefaultValue("POSTGRES_PASSWORD", "max22012004")),
+		DataBase: cast.ToString(getOrDefaultValue("POSTGRES_DATABASE", "comics"))}
 	cfg.Redis = Redis{
-		Host:     cast.ToString(getOrDefaultValue("REDIS_HOST", "localhost")),
+		Host:     cast.ToString(getOrDefaultValue("REDIS_HOST", "3.68.167.84")),
 		Port:     cast.ToInt(getOrDefaultValue("REDIS_PORT", "5432")),
-		Password: cast.ToString(getOrDefaultValue("REDIS_PASSWORD", "password")),
-		DataBase: cast.ToString(getOrDefaultValue("REDIS_DATABASE", "database"))}
+		Password: cast.ToString(getOrDefaultValue("REDIS_PASSWORD", "max22012004")),
+		DataBase: cast.ToString(getOrDefaultValue("REDIS_DATABASE", "comics"))}
 
 	cfg.SekretKey = cast.ToString(getOrDefaultValue("SEKRET_KEY", "sekret"))
 	return &cfg
