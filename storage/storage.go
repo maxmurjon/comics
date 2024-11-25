@@ -69,7 +69,7 @@ type ComicRepoI interface {
 }
 
 type ComicPageRepoI interface {
-	Create(ctx context.Context, req *models.CreateComicsPages) (*models.PrimaryKey, error)
+	Create(ctx context.Context, req *models.CreateComicsPages) (models.PrimaryKey, error)
 	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsPages, error)
 	GetList(ctx context.Context, req *models.GetListComicsPagesRequest) (resp *models.GetListComicsPagesResponse, err error)
 	Update(ctx context.Context, req *models.UpdateComicsPages) (int64, error)

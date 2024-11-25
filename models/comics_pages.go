@@ -6,22 +6,22 @@ type ComicsPages struct {
 	Id         string    `json:"id"`
 	ComicId    int       `json:"comic_id"`
 	PageNumber int       `json:"page_number"`
-	PageUrl     int       `json:"page_url"`
+	PageUrl    string    `json:"page_url"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type CreateComicsPages struct {
-	ComicId    int       `json:"comic_id"`
-	PageNumber int       `json:"page_number"`
-	PageUrl     int       `json:"page_url"`
+	ComicId    int    `json:"comic_id"`
+	PageNumber int    `json:"page_number"`
+	PageUrl    string `json:"page_url"`
 }
 
 type UpdateComicsPages struct {
-	Id        string    `json:"id"`
+	Id         string    `json:"id"`
 	ComicId    int       `json:"comic_id"`
 	PageNumber int       `json:"page_number"`
-	PageUrl     int       `json:"page_url"`
+	PageUrl    string    `json:"page_url"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

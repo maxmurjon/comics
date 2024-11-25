@@ -12,7 +12,7 @@ type comicsPagesRepo struct {
 	db *pgxpool.Pool
 }
 
-func (u *comicsPagesRepo) Create(ctx context.Context, req *models.CreateComicsPages) (*models.PrimaryKey, error) {
+func (u *comicsPagesRepo) Create(ctx context.Context, req *models.CreateComicsPages) (models.PrimaryKey, error) {
 	var id int
 
 	query := `INSERT INTO comics_pages(
@@ -33,7 +33,7 @@ func (u *comicsPagesRepo) Create(ctx context.Context, req *models.CreateComicsPa
 		Id: id,
 	}
 
-	return pKey, err
+	return *pKey, err
 }
 
 func (u *comicsPagesRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsPages, error) {
