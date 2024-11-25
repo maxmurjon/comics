@@ -16,11 +16,7 @@ type Store struct {
 	permission storage.PermissionRepoI
 	userRole   storage.UserRoleRepoI
 	rolePermission storage.RolePermissionRepoI
-	comics storage.ComicRepoI
-	comicsReview storage.ComicReviewRepoI
-	comicsPages storage.ComicPageRepoI
-	order storage.OrderRepoI
-	orderItem storage.OrderItemRepoI
+	product storage.ProductRepoI
 }
 
 func NewPostgres(psqlConnString string) storage.StorageRepoI {
@@ -88,47 +84,11 @@ func (s *Store) RolePermission() storage.RolePermissionRepoI {
 	return s.rolePermission
 }
 
-func (s *Store) Comics() storage.ComicRepoI {
-	if s.comics == nil {
-		s.comics = &comicsRepo{
+func (s *Store) Product() storage.ProductRepoI {
+	if s.product == nil {
+		s.product = &productRepo{
 			db: s.db,
 		}
 	}
-	return s.comics
-}
-
-func (s *Store) ComicReview() storage.ComicReviewRepoI {
-	if s.comicsReview == nil {
-		s.comicsReview = &comicsReviewRepo{
-			db: s.db,
-		}
-	}
-	return s.comicsReview
-}
-
-func (s *Store) ComicsPages() storage.ComicPageRepoI {
-	if s.comicsPages == nil {
-		s.comicsPages = &comicsPagesRepo{
-			db: s.db,
-		}
-	}
-	return s.comicsPages
-}
-
-func (s *Store) Order() storage.OrderRepoI {
-	if s.order == nil {
-		s.order = &orderRepo{
-			db: s.db,
-		}
-	}
-	return s.order
-}
-
-func (s *Store) OrderItem() storage.OrderItemRepoI {
-	if s.orderItem == nil {
-		s.orderItem = &orderItemRepo{
-			db: s.db,
-		}
-	}
-	return s.orderItem
+	return s.product
 }

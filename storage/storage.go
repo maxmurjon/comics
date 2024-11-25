@@ -11,11 +11,7 @@ type StorageRepoI interface {
 	Permission() PermissionRepoI
 	RolePermission() RolePermissionRepoI
 	UserRole() UserRoleRepoI
-	Comics() ComicRepoI
-	Order() OrderRepoI
-	OrderItem() OrderItemRepoI
-	ComicReview() ComicReviewRepoI
-	ComicsPages() ComicPageRepoI 
+	Product() ProductRepoI
 	CloseDB()
 }
 
@@ -60,74 +56,10 @@ type RoleRepoI interface {
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 
-type ComicRepoI interface {
-	Create(ctx context.Context, req *models.CreateComics) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Comics, error)
-	GetList(ctx context.Context, req *models.GetListComicsRequest) (resp *models.GetListComicsResponse, err error)
-	Update(ctx context.Context, req *models.UpdateComics) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type ComicPageRepoI interface {
-	Create(ctx context.Context, req *models.CreateComicsPages) (models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsPages, error)
-	GetList(ctx context.Context, req *models.GetListComicsPagesRequest) (resp *models.GetListComicsPagesResponse, err error)
-	Update(ctx context.Context, req *models.UpdateComicsPages) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type ComicReviewRepoI interface {
-	Create(ctx context.Context, req *models.CreateComicsReview) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ComicsReview, error)
-	GetList(ctx context.Context, req *models.GetListComicsReviewRequest) (resp *models.GetListComicsReviewResponse, err error)
-	Update(ctx context.Context, req *models.UpdateComicsReview) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type OrderRepoI interface {
-	Create(ctx context.Context, req *models.CreateOrder) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Order, error)
-	GetList(ctx context.Context, req *models.GetListOrderRequest) (resp *models.GetListOrderResponse, err error)
-	Update(ctx context.Context, req *models.UpdateOrder) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type OrderItemRepoI interface {
-	Create(ctx context.Context, req *models.CreateOrderItem) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.OrderItem, error)
-	GetList(ctx context.Context, req *models.GetListOrderItemRequest) (resp *models.GetListOrderItemResponse, err error)
-	Update(ctx context.Context, req *models.UpdateOrderItem) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type PurchaseRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type DiscountRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type PromotionRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
-	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-}
-
-type PaymentRepoI interface {
-	Create(ctx context.Context, req *models.CreateRole) (*models.PrimaryKey, error)
-	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Role, error)
-	GetList(ctx context.Context, req *models.GetListRoleRequest) (resp *models.GetListRoleResponse, err error)
-	Update(ctx context.Context, req *models.UpdateRole) (int64, error)
+type ProductRepoI interface {
+	Create(ctx context.Context, req *models.CreateProduct) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Product, error)
+	GetList(ctx context.Context, req *models.GetListProductRequest) (resp *models.GetListProductResponse, err error)
+	Update(ctx context.Context, req *models.UpdateProduct) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
