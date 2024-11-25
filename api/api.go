@@ -56,6 +56,13 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/comic/:id", h.GetComicssByIDHandler)
 	r.DELETE("/deletecomic/:id", h.DeleteComics)
 
+	//Comics pages
+	r.POST("/createcomicpage", h.CreateComicsPages)
+	r.PUT("/updatecomicpages", h.UpdateComicsPages)
+	r.GET("/comicpagess", h.GetComicsPagessList)
+	r.GET("/comicpages/:id", h.GetComicsPagessList)
+	r.DELETE("/deletecomicpages/:id", h.DeleteComicsPages)
+
 	// Order endpoints
 	r.POST("/createorder", h.CreateOrder)
 	r.PUT("/updateorder", h.UpdateOrder)
