@@ -11,7 +11,10 @@ type StorageRepoI interface {
 	Permission() PermissionRepoI
 	RolePermission() RolePermissionRepoI
 	UserRole() UserRoleRepoI
+	Category() CategoryRepoI
 	Product() ProductRepoI
+	ProductImage() ProductImageRepoI
+	ProductAttribute() ProductAttributeRepoI
 	CloseDB()
 }
 
@@ -56,10 +59,34 @@ type RoleRepoI interface {
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 
+type CategoryRepoI interface {
+	Create(ctx context.Context, req *models.CreateCategory) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Category, error)
+	GetList(ctx context.Context, req *models.GetListCategoryRequest) (resp *models.GetListCategoryResponse, err error)
+	Update(ctx context.Context, req *models.UpdateCategory) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
 type ProductRepoI interface {
 	Create(ctx context.Context, req *models.CreateProduct) (*models.PrimaryKey, error)
 	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Product, error)
 	GetList(ctx context.Context, req *models.GetListProductRequest) (resp *models.GetListProductResponse, err error)
 	Update(ctx context.Context, req *models.UpdateProduct) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type ProductImageRepoI interface {
+	Create(ctx context.Context, req *models.CreateProductImage) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ProductImage, error)
+	GetList(ctx context.Context, req *models.GetListProductImageRequest) (resp *models.GetListProductImageResponse, err error)
+	Update(ctx context.Context, req *models.UpdateProductImage) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type ProductAttributeRepoI interface {
+	Create(ctx context.Context, req *models.CreateProductAttribute) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ProductAttribute, error)
+	GetList(ctx context.Context, req *models.GetListProductAttributeRequest) (resp *models.GetListProductAttributeResponse, err error)
+	Update(ctx context.Context, req *models.UpdateProductAttribute) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }

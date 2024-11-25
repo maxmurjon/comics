@@ -16,7 +16,10 @@ type Store struct {
 	permission storage.PermissionRepoI
 	userRole   storage.UserRoleRepoI
 	rolePermission storage.RolePermissionRepoI
+	category storage.CategoryRepoI
 	product storage.ProductRepoI
+	productImage storage.ProductImageRepoI
+	productAttribute storage.ProductAttributeRepoI
 }
 
 func NewPostgres(psqlConnString string) storage.StorageRepoI {
@@ -91,4 +94,32 @@ func (s *Store) Product() storage.ProductRepoI {
 		}
 	}
 	return s.product
+}
+
+func (s *Store) ProductImage() storage.ProductImageRepoI {
+	if s.productImage == nil {
+		s.productImage = &productImagesRepo{
+			db: s.db,
+		}
+	}
+	return s.productImage
+}
+
+func (s *Store) ProductAttribute() storage.ProductAttributeRepoI {
+	if s.productAttribute == nil {
+		s.productAttribute = &productAttributeRepo{
+			db: s.db,
+		}
+	}
+	return s.productAttribute
+}
+
+
+func (s *Store) Category() storage.CategoryRepoI {
+	if s.category == nil {
+		s.category = &categoryRepo{
+			db: s.db,
+		}
+	}
+	return s.category
 }

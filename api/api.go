@@ -49,6 +49,12 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/userrole/:id", h.GetUserRolesByIDHandler)
 	r.DELETE("/deleteuserrole/:id", h.DeleteUserRole)
 
+	//Category Endpoints
+	r.POST("/createcategory", h.CreateCategory)
+	r.PUT("/updatecategory", h.UpdateCategory)
+	r.GET("/categorys", h.GetCategorysList)
+	r.GET("/category/:id", h.GetCategorysByIDHandler)
+	r.DELETE("/deletecategory/:id", h.DeleteCategory)
 
 	//Product Endpoints
 	r.POST("/createproduct", h.CreateProduct)
@@ -56,6 +62,13 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/products", h.GetProductsList)
 	r.GET("/product/:id", h.GetProductsByIDHandler)
 	r.DELETE("/deleteproduct/:id", h.DeleteProduct)
+	
+	//ProductImage Endpoints
+	r.POST("/createproductimage", h.CreateProductImage)
+	r.PUT("/updateproductimage", h.UpdateProductImage)
+	r.GET("/productimages", h.GetProductImagesList)
+	r.GET("/productimage/:id", h.GetProductImagesByIDHandler)
+	r.DELETE("/deleteproductimage/:id", h.DeleteProductImage)
 	
 	
 }
