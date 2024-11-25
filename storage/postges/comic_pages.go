@@ -19,9 +19,8 @@ func (u *comicsPagesRepo) Create(ctx context.Context, req *models.CreateComicsPa
 		comic_id,
 		page_number,
 		page_url,
-		created_at,
-		updated_at 
-	) VALUES ($1, $2, $3,  now(), now()) RETURNING id`
+		created_at
+	) VALUES ($1, $2, $3,  now()) RETURNING id`
 
 	err := u.db.QueryRow(ctx, query,
 		req.ComicId,
@@ -44,10 +43,9 @@ func (u *comicsPagesRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (
 		comic_id,
 		page_number,
 		page_url,
-		created_at,
-		updated_at
+		created_at
         FROM
-            "comics_pages"
+            "comic_pages"
         WHERE
             id = $1`
 
@@ -57,7 +55,6 @@ func (u *comicsPagesRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (
 		&res.PageNumber,
 		&res.PageUrl,
 		&res.CreatedAt, // created_at as time.Time
-		&res.UpdatedAt, // updated_at as time.Time
 	)
 	if err != nil {
 		return res, err
@@ -75,10 +72,9 @@ func (u *comicsPagesRepo) GetList(ctx context.Context, req *models.GetListComics
 		comic_id,
 		page_number,
 		page_url,
-		created_at,
-		updated_at
+		created_at
 	FROM
-		"comics_pages"`
+		"comic_pages"`
 	filter := " WHERE 1=1"
 	order := " ORDER BY created_at"
 	arrangement := " DESC"
@@ -127,7 +123,6 @@ func (u *comicsPagesRepo) GetList(ctx context.Context, req *models.GetListComics
 			&obj.PageNumber,
 			&obj.PageUrl,
 			&obj.CreatedAt,
-			&obj.UpdatedAt,
 		)
 
 		if err != nil {
@@ -141,11 +136,10 @@ func (u *comicsPagesRepo) GetList(ctx context.Context, req *models.GetListComics
 }
 
 func (u *comicsPagesRepo) Update(ctx context.Context, req *models.UpdateComicsPages) (id int64, err error) {
-	query := `UPDATE "comics_Pages" SET
+	query := `UPDATE "comic_Pages" SET
 		comic_id =:comic_id,
 		page_number =:page_number,
-		page_url =:page_url,
-		updated_at=now()
+		page_url =:page_url
 	WHERE
 		id = :id`
 
@@ -168,7 +162,7 @@ func (u *comicsPagesRepo) Update(ctx context.Context, req *models.UpdateComicsPa
 }
 
 func (u *comicsPagesRepo) Delete(ctx context.Context, req *models.PrimaryKey) (id int64, err error) {
-	query := `DELETE FROM "comics_pages" WHERE id = $1`
+	query := `DELETE FROM "comic_pages" WHERE id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)
 	if err != nil {

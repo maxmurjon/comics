@@ -8,7 +8,6 @@ type ComicsPages struct {
 	PageNumber int       `json:"page_number"`
 	PageUrl    string    `json:"page_url"`
 	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type CreateComicsPages struct {
@@ -23,7 +22,6 @@ type UpdateComicsPages struct {
 	PageNumber int       `json:"page_number"`
 	PageUrl    string    `json:"page_url"`
 	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type GetListComicsPagesRequest struct {
