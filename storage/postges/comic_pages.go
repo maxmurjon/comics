@@ -15,7 +15,7 @@ type comicsPagesRepo struct {
 func (u *comicsPagesRepo) Create(ctx context.Context, req *models.CreateComicsPages) (models.PrimaryKey, error) {
 	var id int
 
-	query := `INSERT INTO comics_pages(
+	query := `INSERT INTO comic_pages(
 		comic_id,
 		page_number,
 		page_url,
