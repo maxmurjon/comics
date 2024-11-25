@@ -32,7 +32,7 @@ func (u *productRepo) Create(ctx context.Context, req *models.CreateProduct) (*m
 		req.Description,
 		req.Price,
 		req.StockQuantity,
-		req, req.CategoryID,
+		req.CategoryID,
 	).Scan(&newID)
 	if err != nil {
 		return nil, err
