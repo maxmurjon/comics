@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -15,80 +16,53 @@ import (
 )
 
 // Define the directory to save uploaded images
-const uploadDir = "./uploads/products/"
+// const uploadDir = "./uploads/products/"
 
 func (h *Handler) CreateProductImage(c *gin.Context) {
-	// Parse multipart form to get the file
 	file, fileHeader, err := c.Request.FormFile("image")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{
-			Message: "Invalid request body: " + err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get image"})
 		return
 	}
 	defer file.Close()
 
-	// Ensure upload directory exists
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Failed to create upload directory: " + err.Error(),
-		})
-		return
-	}
+	// Faylni saqlash uchun noyob nom yaratish
+	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), fileHeader.Filename)
+	filePath := filepath.Join("uploads", fileName)
 
-	// Sanitize and generate a unique file name
-	sanitizedFileName := filepath.Base(fileHeader.Filename)
-	uniqueFileName := strconv.FormatInt(time.Now().UnixNano(), 10) + filepath.Ext(sanitizedFileName)
-	filePath := filepath.Join(uploadDir, uniqueFileName)
-
-	// Save the file to the server
+	// Faylni saqlash
 	out, err := os.Create(filePath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Failed to save file: " + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
 		return
 	}
 	defer out.Close()
 
 	if _, err := io.Copy(out, file); err != nil {
-		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Failed to write file: " + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
 
-	// Parse and validate product_id
-	productIdStr := c.PostForm("product_id")
-	productId, err := strconv.Atoi(productIdStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{
-			Message: "Invalid product_id: " + err.Error(),
-		})
+	// Qo'shimcha ma'lumotlarni olish
+	productId := c.PostForm("product_id")
+	productID,_:=strconv.Atoi(productId)
+	isPrimary := c.PostForm("is_primary")
+	isprimary,_:=strconv.ParseBool(isPrimary)
+
+	// Ma'lumotlarni javobda qaytarish
+
+	id,err:=h.strg.ProductImage().Create(context.Background(),&models.CreateProductImage{ProductID: productID,ImageUrl: filePath,IsPrimary: isprimary})
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
 
-	// Prepare the entity for database insertion
-	relativeFilePath := "/uploads/products/" + uniqueFileName
-	entity := &models.CreateProductImage{
-		ProductID: productId,
-		ImageUrl:  relativeFilePath,
-		IsPrimary: c.PostForm("is_primary") == "true",
-	}
-
-	// Insert into database
-	id, err := h.strg.ProductImage().Create(context.Background(), entity)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{
-			Message: "Failed to create ProductImage: " + err.Error(),
-		})
+	productImage,err:=h.strg.ProductImage().GetByID(context.Background(),id)
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
-
-	c.JSON(http.StatusOK, models.SuccessResponse{
-		Message: "ProductImage has been created",
-		Data:    id,
-	})
+	c.JSON(http.StatusOK, productImage)
 }
 
 func (h *Handler) UpdateProductImage(c *gin.Context) {
