@@ -8,7 +8,6 @@ type Product struct {
 	Description   string    `json:"description"`
 	Price         float64   `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
 	StockQuantity int       `json:"stock_quantity"` // Ombordagi mahsulot miqdori
-	CategoryID    int       `json:"category_id"`    // Kategoriyaning ID si
 	CreatedAt     time.Time `json:"created_at"`     // Yaratilgan vaqt
 	UpdatedAt     time.Time `json:"updated_at"`     // Yangilangan vaqt
 }
@@ -19,7 +18,6 @@ type CreateProduct struct {
 	Description   string    `json:"description"`
 	Price         float64   `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
 	StockQuantity int       `json:"stock_quantity"` // Ombordagi mahsulot miqdori
-	CategoryID    int       `json:"category_id"`    // Kategoriyaning ID si
 }
 
 type UpdateProduct struct {
@@ -28,7 +26,6 @@ type UpdateProduct struct {
 	Description   string    `json:"description"`
 	Price         float64   `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
 	StockQuantity int       `json:"stock_quantity"` // Ombordagi mahsulot miqdori
-	CategoryID    int       `json:"category_id"`    // Kategoriyaning ID si
 }
 
 type GetListProductRequest struct {

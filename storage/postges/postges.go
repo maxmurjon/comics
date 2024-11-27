@@ -20,6 +20,7 @@ type Store struct {
 	product storage.ProductRepoI
 	productImage storage.ProductImageRepoI
 	productAttribute storage.ProductAttributeRepoI
+	attribute storage.AttributeRepoI
 }
 
 func NewPostgres(psqlConnString string) storage.StorageRepoI {
@@ -104,6 +105,16 @@ func (s *Store) ProductImage() storage.ProductImageRepoI {
 	}
 	return s.productImage
 }
+
+func (s *Store) Attribute() storage.AttributeRepoI {
+	if s.attribute == nil {
+		s.attribute = &attributeRepo{
+			db: s.db,
+		}
+	}
+	return s.attribute
+}
+
 
 func (s *Store) ProductAttribute() storage.ProductAttributeRepoI {
 	if s.productAttribute == nil {

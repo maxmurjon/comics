@@ -15,6 +15,7 @@ type StorageRepoI interface {
 	Product() ProductRepoI
 	ProductImage() ProductImageRepoI
 	ProductAttribute() ProductAttributeRepoI
+	Attribute() AttributeRepoI
 	CloseDB()
 }
 
@@ -80,6 +81,14 @@ type ProductImageRepoI interface {
 	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ProductImage, error)
 	GetList(ctx context.Context, req *models.GetListProductImageRequest) (resp *models.GetListProductImageResponse, err error)
 	Update(ctx context.Context, req *models.UpdateProductImage) (int64, error)
+	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+}
+
+type AttributeRepoI interface {
+	Create(ctx context.Context, req *models.CreateAttribute) (*models.PrimaryKey, error)
+	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Attribute, error)
+	GetList(ctx context.Context, req *models.GetListAttributeRequest) (resp *models.GetListAttributeResponse, err error)
+	Update(ctx context.Context, req *models.UpdateAttribute) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }
 

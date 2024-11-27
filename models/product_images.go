@@ -1,10 +1,14 @@
 package models
 
+import "time"
+
 type ProductImage struct {
-	ID        int    `json:"id"`
-	ProductID int    `json:"product_id"`
-	ImageUrl  string `json:"image_url"`
-	IsPrimary bool   `json:"is_primary"`
+	ID        int       `json:"id"`
+	ProductID int       `json:"product_id"`
+	ImageUrl  string    `json:"image_url"`
+	IsPrimary bool      `json:"is_primary"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CreateProductImage struct {

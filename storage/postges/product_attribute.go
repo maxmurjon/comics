@@ -16,14 +16,14 @@ func (u *productAttributeRepo) Create(ctx context.Context, req *models.CreatePro
 	query := `
 		INSERT INTO product_attributes (
 			product_id,
-			key,
+			attribute_id,
 			value,
-		) VALUES ($1,$2,$3)
+		) VALUES ($1,$2,$3,now(),now())
 		RETURNING id;
 	`
 
 	var newID int
-	err := u.db.QueryRow(ctx, query, req.ProductID, req.Key, req.Value).Scan(&newID)
+	err := u.db.QueryRow(ctx, query, req.ProductID, req.AttributeID, req.Value).Scan(&newID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +41,10 @@ func (u *productAttributeRepo) GetByID(ctx context.Context, req *models.PrimaryK
 	query := `SELECT
 		id,
 		product_id,
-		key,
-		value
+		attribute_id,
+		value,
+		created_at,
+		updated_at
 	FROM
 		product_attributes
 	WHERE
@@ -51,8 +53,10 @@ func (u *productAttributeRepo) GetByID(ctx context.Context, req *models.PrimaryK
 	err := u.db.QueryRow(ctx, query, req.Id).Scan(
 		&res.ID,
 		&res.ProductID,
-		&res.Key,
+		&res.AttributeID,
 		&res.Value,
+		&res.CreatedAt,
+		&res.UpdatedAt,
 	)
 	if err != nil {
 		return res, err
@@ -70,8 +74,10 @@ func (u *productAttributeRepo) GetList(ctx context.Context, req *models.GetListP
 	query := `SELECT
 		id,
 		product_id,
-		key,
-		value
+		attribute_id,
+		value,
+		created_at,
+		updated_at
 	FROM
 		product_attributes`
 	filter := " WHERE 1=1"
@@ -118,8 +124,10 @@ func (u *productAttributeRepo) GetList(ctx context.Context, req *models.GetListP
 		err = rows.Scan(
 			&obj.ID,
 			&obj.ProductID,
-			&obj.Key,
+			&obj.AttributeID,
 			&obj.Value,
+			&obj.CreatedAt,
+			&obj.UpdatedAt,
 		)
 		if err != nil {
 			return res, err
@@ -135,15 +143,16 @@ func (u *productAttributeRepo) GetList(ctx context.Context, req *models.GetListP
 func (u *productAttributeRepo) Update(ctx context.Context, req *models.UpdateProductAttribute) (int64, error) {
 	query := `UPDATE product_attributes SET
 		product_id = :product_id,
-		key =:key,
-		value = :value
+		attribute_id =:attribute_id,
+		value = :value,
+		updated_at = now()
 	WHERE
 		id = :id`
 
 	params := map[string]interface{}{
 		"id":         req.ID,
 		"product_id": req.ProductID,
-		"key": req.Key,
+		"attribute_id": req.AttributeID,
 		"value": req.Value,
 	}
 

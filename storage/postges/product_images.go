@@ -17,8 +17,10 @@ func (u *productImagesRepo) Create(ctx context.Context, req *models.CreateProduc
 		INSERT INTO product_images (
 			product_id,
 			image_url,
-			is_primary
-		) VALUES ($1,$2,$3)
+			is_primary,
+			created_at,
+			updated_at
+		) VALUES ($1,$2,$3,now(),now())
 		RETURNING id;
 	`
 
@@ -42,7 +44,9 @@ func (u *productImagesRepo) GetByID(ctx context.Context, req *models.PrimaryKey)
 		id,
 		product_id,
 		image_url,
-		is_primary
+		is_primary,
+		created_at,
+		updated_at
 	FROM
 		product_images
 	WHERE
@@ -53,6 +57,8 @@ func (u *productImagesRepo) GetByID(ctx context.Context, req *models.PrimaryKey)
 		&res.ProductID,
 		&res.ImageUrl,
 		&res.IsPrimary,
+		&res.CreatedAt,
+		&res.UpdatedAt,
 	)
 	if err != nil {
 		return res, err
@@ -71,7 +77,9 @@ func (u *productImagesRepo) GetList(ctx context.Context, req *models.GetListProd
 		id,
 		product_id,
 		image_url,
-		is_primary
+		is_primary,
+		created_at,
+		updated_at
 	FROM
 		product_images`
 	filter := " WHERE 1=1"
@@ -120,6 +128,8 @@ func (u *productImagesRepo) GetList(ctx context.Context, req *models.GetListProd
 			&obj.ProductID,
 			&obj.ImageUrl,
 			&obj.IsPrimary,
+			&obj.CreatedAt,
+			&obj.UpdatedAt,
 		)
 		if err != nil {
 			return res, err
@@ -136,7 +146,8 @@ func (u *productImagesRepo) Update(ctx context.Context, req *models.UpdateProduc
 	query := `UPDATE product_images SET
 		product_id = :product_id,
 		image_url =:image_url,
-		is_primary = :is_primary
+		is_primary = :is_primary,
+		updated_at =now()
 	WHERE
 		id = :id`
 

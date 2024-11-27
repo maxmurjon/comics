@@ -8,30 +8,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type productRepo struct {
+type attributeRepo struct {
 	db *pgxpool.Pool
 }
 
-func (u *productRepo) Create(ctx context.Context, req *models.CreateProduct) (*models.PrimaryKey, error) {
+func (u *attributeRepo) Create(ctx context.Context, req *models.CreateAttribute) (*models.PrimaryKey, error) {
 	query := `
-		INSERT INTO products (
+		INSERT INTO attributes (
 			name,
-			description,
-			price,
-			stock_quantity,
+			data_type,
 			created_at,
 			updated_at
-		) VALUES ($1,$2,$3,$4,$5,now(),now())
+		) VALUES ($1,$2,now(),now())
 		RETURNING id;
 	`
 
 	var newID int
-	err := u.db.QueryRow(ctx, query,
-		req.Name,
-		req.Description,
-		req.Price,
-		req.StockQuantity,
-	).Scan(&newID)
+	err := u.db.QueryRow(ctx, query, req.Name).Scan(&newID)
 	if err != nil {
 		return nil, err
 	}
@@ -43,28 +36,24 @@ func (u *productRepo) Create(ctx context.Context, req *models.CreateProduct) (*m
 	return pKey, nil
 }
 
-// GetByID retrieves a role by its ID.
-func (u *productRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Product, error) {
-	res := &models.Product{}
+// GetByID retrieves a attribute by its ID.
+func (u *attributeRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*models.Attribute, error) {
+	res := &models.Attribute{}
 	query := `SELECT
 		id,
 		name,
-		description,
-		price,
-		stock_quantity,
+		data_type,
 		created_at,
 		updated_at
 	FROM
-		products
+		attributes
 	WHERE
 		id = $1`
 
 	err := u.db.QueryRow(ctx, query, req.Id).Scan(
 		&res.ID,
 		&res.Name,
-		&res.Description,
-		&res.Price,
-		&res.StockQuantity,
+		&res.DataType,
 		&res.CreatedAt,
 		&res.UpdatedAt,
 	)
@@ -75,27 +64,25 @@ func (u *productRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*mod
 	return res, nil
 }
 
-// GetList retrieves a list of roles with pagination and optional search functionality.
-func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductRequest) (*models.GetListProductResponse, error) {
-	res := &models.GetListProductResponse{}
+// GetList retrieves a list of attributes with pagination and optional search functionality.
+func (u *attributeRepo) GetList(ctx context.Context, req *models.GetListAttributeRequest) (*models.GetListAttributeResponse, error) {
+	res := &models.GetListAttributeResponse{}
 	params := make(map[string]interface{})
 	var arr []interface{}
 
 	query := `SELECT
 		id,
 		name,
-		description,
-		price,
-		stock_quantity,
+		data_type,
 		created_at,
 		updated_at
 	FROM
-		products`
+		attributes`
 	filter := " WHERE 1=1"
 	offset := " OFFSET 0"
 	limit := " LIMIT 10"
 
-	// Implement search on name only
+	// Implement search on attribute_name only
 	if len(req.Search) > 0 {
 		params["search"] = req.Search
 		filter += " AND name ILIKE '%' || :search || '%'"
@@ -112,7 +99,7 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 	}
 
 	// Count query
-	cQ := `SELECT count(1) FROM products` + filter
+	cQ := `SELECT count(1) FROM attributes` + filter
 	cQ, arr = helper.ReplaceQueryParams(cQ, params)
 	err := u.db.QueryRow(ctx, cQ, arr...).Scan(
 		&res.Count,
@@ -121,7 +108,7 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 		return res, err
 	}
 
-	// Main query for retrieving roles
+	// Main query for retrieving attributes
 	q := query + filter + offset + limit
 	q, arr = helper.ReplaceQueryParams(q, params)
 	rows, err := u.db.Query(ctx, q, arr...)
@@ -131,13 +118,11 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 	defer rows.Close()
 
 	for rows.Next() {
-		obj := &models.Product{}
+		obj := &models.Attribute{}
 		err = rows.Scan(
 			&obj.ID,
 			&obj.Name,
-			&obj.Description,
-			&obj.Price,
-			&obj.StockQuantity,
+			&obj.DataType,
 			&obj.CreatedAt,
 			&obj.UpdatedAt,
 		)
@@ -145,30 +130,25 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 			return res, err
 		}
 
-		res.Products = append(res.Products, obj)
+		res.Attributes = append(res.Attributes, obj)
 	}
 
 	return res, nil
 }
 
-// Update updates a role in the roles table.
-func (u *productRepo) Update(ctx context.Context, req *models.UpdateProduct) (int64, error) {
-	query := `UPDATE products SET
+// Update updates a attribute in the attributes table.
+func (u *attributeRepo) Update(ctx context.Context, req *models.UpdateAttribute) (int64, error) {
+	query := `UPDATE attributes SET
 		name = :name,
-		decription = :decription,
-		price = :price,
-		stock_quantity = :stock_quantity,
-		update_at=now()
+		data_type = :data_type,
+		updated_at = now()
 	WHERE
 		id = :id`
 
 	params := map[string]interface{}{
-		"id":          req.ID,
-		"name":        req.Name,
-		"description": req.Description,
-		"price": req.Price,
-		"stock_quantity": req.StockQuantity,
-		
+		"id":        req.ID,
+		"name": req.Name,
+		"data_type": req.DataType,
 	}
 
 	q, arr := helper.ReplaceQueryParams(query, params)
@@ -182,9 +162,9 @@ func (u *productRepo) Update(ctx context.Context, req *models.UpdateProduct) (in
 	return rowsAffected, err
 }
 
-// Delete deletes a role from the roles table by its ID.
-func (u *productRepo) Delete(ctx context.Context, req *models.PrimaryKey) (int64, error) {
-	query := `DELETE FROM products WHERE id = $1`
+// Delete deletes a attribute from the attributes table by its ID.
+func (u *attributeRepo) Delete(ctx context.Context, req *models.PrimaryKey) (int64, error) {
+	query := `DELETE FROM attributes WHERE id = $1`
 
 	result, err := u.db.Exec(ctx, query, req.Id)
 	if err != nil {
