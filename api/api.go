@@ -62,6 +62,20 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/products", h.GetProductsList)
 	r.GET("/product/:id", h.GetProductsByIDHandler)
 	r.DELETE("/deleteproduct/:id", h.DeleteProduct)
+
+	//Attribute Endpoints
+	r.POST("/createattribute", h.CreateAttribute)
+	r.PUT("/updateattribute", h.UpdateAttribute)
+	r.GET("/attributes", h.GetAttributesList)
+	r.GET("/attribute/:id", h.GetAttributesByIDHandler)
+	r.DELETE("/deleteattribute/:id", h.DeleteAttribute)
+
+	//ProductAttribute Endpoints
+	r.POST("/createproductattribute", h.CreateProductAttribute)
+	r.PUT("/updateproductattribute", h.UpdateProductAttribute)
+	r.GET("/productattributes", h.GetProductAttributesList)
+	r.GET("/productattribute/:id", h.GetProductAttributesByIDHandler)
+	r.DELETE("/deleteproductattribute/:id", h.DeleteProductAttribute)
 	
 	//ProductImage Endpoints
 	r.POST("/createproductimage", h.CreateProductImage)
