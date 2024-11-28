@@ -155,10 +155,10 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 func (u *productRepo) Update(ctx context.Context, req *models.UpdateProduct) (int64, error) {
 	query := `UPDATE products SET
 		name = :name,
-		decription = :decription,
+		description = :description,
 		price = :price,
 		stock_quantity = :stock_quantity,
-		update_at=now()
+		updated_at=now()
 	WHERE
 		id = :id`
 
