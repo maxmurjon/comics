@@ -21,7 +21,7 @@ func (u *productRepo) Create(ctx context.Context, req *models.CreateProduct) (*m
 			stock_quantity,
 			created_at,
 			updated_at
-		) VALUES ($1,$2,$3,$4,$5,now(),now())
+		) VALUES ($1,$2,$3,$4,now(),now())
 		RETURNING id;
 	`
 
@@ -163,12 +163,11 @@ func (u *productRepo) Update(ctx context.Context, req *models.UpdateProduct) (in
 		id = :id`
 
 	params := map[string]interface{}{
-		"id":          req.ID,
-		"name":        req.Name,
-		"description": req.Description,
-		"price": req.Price,
+		"id":             req.ID,
+		"name":           req.Name,
+		"description":    req.Description,
+		"price":          req.Price,
 		"stock_quantity": req.StockQuantity,
-		
 	}
 
 	q, arr := helper.ReplaceQueryParams(query, params)
