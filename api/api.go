@@ -8,12 +8,14 @@ import (
 )
 
 func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
-	
-	r.Use(customCORSMiddleware()) 
-	
+
+	r.Use(customCORSMiddleware())
+
+	r.Static("/uploads", "./uploads")
+
 	// Auth Endpoints
-	r.POST("/register",h.Register)
-	r.POST("/login",h.Login)
+	r.POST("/register", h.Register)
+	r.POST("/login", h.Login)
 	// Users Endpoints
 	r.POST("/createuser", h.CreateUser)
 	r.PUT("/updateuser", h.UpdateUser)
@@ -76,22 +78,21 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/productattributes", h.GetProductAttributesList)
 	r.GET("/productattribute/:id", h.GetProductAttributesByIDHandler)
 	r.DELETE("/deleteproductattribute/:id", h.DeleteProductAttribute)
-	
+
 	//ProductImage Endpoints
 	r.POST("/createproductimage", h.CreateProductImage)
 	r.PUT("/updateproductimage", h.UpdateProductImage)
 	r.GET("/productimages", h.GetProductImagesList)
 	r.GET("/productimage/:id", h.GetProductImagesByIDHandler)
 	r.DELETE("/deleteproductimage/:id", h.DeleteProductImage)
-	
-	
+
 }
 
 func customCORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// CORS sarlavhalari
-		c.Header("Access-Control-Allow-Origin", "*") // Barcha manbalarga ruxsat berish
-		c.Header("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE, HEAD") // Ruxsat etilgan metodlar
+		c.Header("Access-Control-Allow-Origin", "*")                                                                                                      // Barcha manbalarga ruxsat berish
+		c.Header("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE, HEAD")                                                          // Ruxsat etilgan metodlar
 		c.Header("Access-Control-Allow-Headers", "Platform-Id, Content-Type, Content-Length, Accept-Encoding, X-CSF-TOKEN, Authorization, Cache-Control") // So'rov sarlavhalari
 
 		// Agar OPTIONS so'rovi bo'lsa, javob yuborib, keyingi ishlov berishni to'xtatish
@@ -104,4 +105,3 @@ func customCORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
