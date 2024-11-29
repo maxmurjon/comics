@@ -18,6 +18,8 @@ func (u *productAttributeRepo) Create(ctx context.Context, req *models.CreatePro
 			product_id,
 			attribute_id,
 			value,
+			created_at,
+			updated_at
 		) VALUES ($1,$2,$3,now(),now())
 		RETURNING id;
 	`
