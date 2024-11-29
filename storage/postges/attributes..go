@@ -24,7 +24,7 @@ func (u *attributeRepo) Create(ctx context.Context, req *models.CreateAttribute)
 	`
 
 	var newID int
-	err := u.db.QueryRow(ctx, query, req.Name).Scan(&newID)
+	err := u.db.QueryRow(ctx, query, req.Name,req.DataType).Scan(&newID)
 	if err != nil {
 		return nil, err
 	}

@@ -8,11 +8,11 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"time"
 
 	"comics/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // Define the directory to save uploaded images
@@ -26,8 +26,14 @@ func (h *Handler) CreateProductImage(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// Faylni saqlash uchun noyob nom yaratish
-	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), fileHeader.Filename)
+	// Fayl hajmini tekshirish
+	if fileHeader.Size > 5*1024*1024 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 5MB"})
+		return
+	}
+
+	// UUID asosida noyob nom yaratish
+	fileName := fmt.Sprintf("%s%s", uuid.New().String(), filepath.Ext(fileHeader.Filename))
 	filePath := filepath.Join("uploads", fileName)
 
 	// Faylni saqlash
@@ -45,23 +51,26 @@ func (h *Handler) CreateProductImage(c *gin.Context) {
 
 	// Qo'shimcha ma'lumotlarni olish
 	productId := c.PostForm("product_id")
-	productID,_:=strconv.Atoi(productId)
+	productID, _ := strconv.Atoi(productId)
 	isPrimary := c.PostForm("is_primary")
-	isprimary,_:=strconv.ParseBool(isPrimary)
+	isprimary, _ := strconv.ParseBool(isPrimary)
 
-	// Ma'lumotlarni javobda qaytarish
-
-	id,err:=h.strg.ProductImage().Create(context.Background(),&models.CreateProductImage{ProductID: productID,ImageUrl: filePath,IsPrimary: isprimary})
-	if err!=nil{
+	// Ma'lumotlarni saqlash
+	id, err := h.strg.ProductImage().Create(context.Background(), &models.CreateProductImage{
+		ProductID: productID, ImageUrl: filePath, IsPrimary: isprimary,
+	})
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
 
-	productImage,err:=h.strg.ProductImage().GetByID(context.Background(),id)
-	if err!=nil{
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
+	productImage, err := h.strg.ProductImage().GetByID(context.Background(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch product image"})
 		return
 	}
+
+	// Javob qaytarish
 	c.JSON(http.StatusOK, productImage)
 }
 
