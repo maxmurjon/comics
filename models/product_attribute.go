@@ -4,7 +4,7 @@ import "time"
 
 type ProductAttribute struct {
 	ID          int       `json:"id"`
-	ProductID   string    `json:"product_id"`
+	ProductID   int    `json:"product_id"`
 	AttributeID int       `json:"attribute_id"`
 	Value       string    `json:"value"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -12,14 +12,14 @@ type ProductAttribute struct {
 }
 
 type CreateProductAttribute struct {
-	ProductID   string    `json:"product_id"`
+	ProductID   int    `json:"product_id"`
 	AttributeID int       `json:"attribute_id"`
 	Value       string    `json:"value"`
 }
 
 type UpdateProductAttribute struct {
 	ID          int    `json:"id"`
-	ProductID   string    `json:"product_id"`
+	ProductID   int    `json:"product_id"`
 	AttributeID int       `json:"attribute_id"`
 	Value       string    `json:"value"`
 }
