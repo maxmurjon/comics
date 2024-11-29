@@ -16,13 +16,13 @@ func (u *categoryRepo) Create(ctx context.Context, req *models.CreateCategory) (
 	query := `
 		INSERT INTO categories (
 			name,
-			created_at
-		) VALUES ($1,now())
+			description
+		) VALUES ($1,$2)
 		RETURNING id;
 	`
 
 	var newID int
-	err := u.db.QueryRow(ctx, query, req.Name).Scan(&newID)
+	err := u.db.QueryRow(ctx, query, req.Name,req.Description).Scan(&newID)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (u *categoryRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*mo
 	query := `SELECT
 		id,
 		name,
-		created_at
+		description
 	FROM
 		categories
 	WHERE
@@ -49,7 +49,7 @@ func (u *categoryRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*mo
 	err := u.db.QueryRow(ctx, query, req.Id).Scan(
 		&res.ID,
 		&res.Name,
-		&res.CreatedAt,
+		&res.Description,
 	)
 	if err != nil {
 		return res, err
@@ -67,7 +67,7 @@ func (u *categoryRepo) GetList(ctx context.Context, req *models.GetListCategoryR
 	query := `SELECT
 		id,
 		name,
-		created_at
+		description
 	FROM
 		categories`
 	filter := " WHERE 1=1"
@@ -114,7 +114,7 @@ func (u *categoryRepo) GetList(ctx context.Context, req *models.GetListCategoryR
 		err = rows.Scan(
 			&obj.ID,
 			&obj.Name,
-			&obj.CreatedAt,
+			&obj.Description,
 		)
 		if err != nil {
 			return res, err
@@ -130,12 +130,14 @@ func (u *categoryRepo) GetList(ctx context.Context, req *models.GetListCategoryR
 func (u *categoryRepo) Update(ctx context.Context, req *models.UpdateCategory) (int64, error) {
 	query := `UPDATE categories SET
 		name = :name,
+		description = :description
 	WHERE
 		id = :id`
 
 	params := map[string]interface{}{
 		"id":        req.ID,
 		"name": req.Name,
+		"desription":req.Description,
 	}
 
 	q, arr := helper.ReplaceQueryParams(query, params)

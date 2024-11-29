@@ -3,89 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Product Image</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f7f7f7;
-        }
-        form {
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-            display: block;
-        }
-        input, button {
-            margin-top: 5px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>API Creator</title>
 </head>
 <body>
+    <h1>API Creator</h1>
 
-    <h1>Upload Product Image</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="product_id">Product ID:</label>
-        <input type="number" id="product_id" name="product_id" placeholder="Enter product ID" required>
+    <!-- Category Create -->
+    <h2>Create Category</h2>
+    <form id="createCategoryForm">
+        <label for="categoryName">Category Name:</label>
+        <input type="text" id="categoryName" name="name" required><br><br>
+        <button type="submit">Create Category</button>
+    </form>
+    <br>
 
-        <label for="is_primary">Is Primary Image:</label>
-        <select id="is_primary" name="is_primary" required>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-        </select>
+    <!-- Product Create -->
+    <h2>Create Product</h2>
+    <form id="createProductForm">
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="name" required><br><br>
+        <label for="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" name="price" required><br><br>
+        <label for="productCategory">Category ID:</label>
+        <input type="number" id="productCategory" name="category_id" required><br><br>
+        <button type="submit">Create Product</button>
+    </form>
+    <br>
 
-        <label for="image">Choose Image:</label>
-        <input type="file" id="image" name="image" accept="image/*" required>
+    <!-- Attribute Create -->
+    <h2>Create Attribute</h2>
+    <form id="createAttributeForm">
+        <label for="attributeName">Attribute Name:</label>
+        <input type="text" id="attributeName" name="name" required><br><br>
+        <button type="submit">Create Attribute</button>
+    </form>
+    <br>
 
-        <button type="submit">Upload</button>
+    <!-- Product Image Upload -->
+    <h2>Upload Product Image</h2>
+    <form id="uploadProductImageForm" enctype="multipart/form-data">
+        <label for="productID">Product ID:</label>
+        <input type="number" id="productID" name="product_id" required><br><br>
+        <label for="productImage">Product Image:</label>
+        <input type="file" id="productImage" name="image" accept="image/*" required><br><br>
+        <button type="submit">Upload Image</button>
     </form>
 
     <script>
-        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
+        const baseUrl = "http://3.68.167.84:8000";
 
-            // Form ma'lumotlarini to'plash
+        // Create Category
+        document.getElementById('createCategoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('categoryName').value;
+
+            const response = await fetch(`${baseUrl}/createcategory`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            });
+
+            const data = await response.json();
+            alert(JSON.stringify(data));
+        });
+
+        // Create Product
+        document.getElementById('createProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const category_id = document.getElementById('productCategory').value;
+
+            const response = await fetch(`${baseUrl}/createproduct`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, price, category_id })
+            });
+
+            const data = await response.json();
+            alert(JSON.stringify(data));
+        });
+
+        // Create Attribute
+        document.getElementById('createAttributeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('attributeName').value;
+
+            const response = await fetch(`${baseUrl}/createattribute`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            });
+
+            const data = await response.json();
+            alert(JSON.stringify(data));
+        });
+
+        // Upload Product Image
+        document.getElementById('uploadProductImageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const product_id = document.getElementById('productID').value;
+            const image = document.getElementById('productImage').files[0];
+
             const formData = new FormData();
-            formData.append("product_id", document.getElementById("product_id").value);
-            formData.append("is_primary", document.getElementById("is_primary").value);
-            formData.append("image", document.getElementById("image").files[0]);
+            formData.append('product_id', product_id);
+            formData.append('image', image);
 
-            try {
-                // APIga so'rov yuborish
-                const response = await fetch("http://3.68.167.84:8000/createproductimage", {
-                    method: "POST",
-                    body: formData,
-                });
+            const response = await fetch(`${baseUrl}/createproductimage`, {
+                method: 'POST',
+                body: formData
+            });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    alert("Image uploaded successfully:\n" + JSON.stringify(result, null, 2));
-                } else {
-                    const error = await response.json();
-                    alert("Error uploading image:\n" + error.error);
-                }
-            } catch (error) {
-                alert("Failed to upload image:\n" + error.message);
-            }
+            const data = await response.json();
+            alert(JSON.stringify(data));
         });
     </script>
-
 </body>
 </html>

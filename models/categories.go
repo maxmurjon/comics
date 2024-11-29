@@ -3,16 +3,18 @@ package models
 type Category struct {
 	ID          string `json:"id"`
 	Name    string `json:"name"`
-	CreatedAt string `json:"created_at"`
+	Description string `json:"description"`
 }
 
 type CreateCategory struct {
 	Name    string `json:"name"`
+	Description string `json:"description"`
 }
 
 type UpdateCategory struct {
 	ID          string `json:"id"`
 	Name    string `json:"name"`
+	Description string `json:"description"`
 }
 
 type GetListCategoryRequest struct {
