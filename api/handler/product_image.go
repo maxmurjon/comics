@@ -19,8 +19,10 @@ import (
 // const uploadDir = "./uploads/products/"
 
 func (h *Handler) CreateProductImage(c *gin.Context) {
+	fmt.Println("Hello")
 	file, fileHeader, err := c.Request.FormFile("image")
 	if err != nil {
+		fmt.Println("err 1",err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get image"})
 		return
 	}
@@ -28,6 +30,7 @@ func (h *Handler) CreateProductImage(c *gin.Context) {
 
 	// Fayl hajmini tekshirish
 	if fileHeader.Size > 5*1024*1024 {
+		fmt.Println("err 2",err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 5MB"})
 		return
 	}
@@ -39,12 +42,14 @@ func (h *Handler) CreateProductImage(c *gin.Context) {
 	// Faylni saqlash
 	out, err := os.Create(filePath)
 	if err != nil {
+		fmt.Println("err 3",err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
 		return
 	}
 	defer out.Close()
 
 	if _, err := io.Copy(out, file); err != nil {
+		fmt.Println("err 4",err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
@@ -60,12 +65,14 @@ func (h *Handler) CreateProductImage(c *gin.Context) {
 		ProductID: productID, ImageUrl: filePath, IsPrimary: isprimary,
 	})
 	if err != nil {
+		fmt.Println("err 5",err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write file"})
 		return
 	}
 
 	productImage, err := h.strg.ProductImage().GetByID(context.Background(), id)
 	if err != nil {
+		fmt.Println("err 6",err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch product image"})
 		return
 	}
