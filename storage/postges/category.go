@@ -16,7 +16,7 @@ func (u *categoryRepo) Create(ctx context.Context, req *models.CreateCategory) (
 	query := `
 		INSERT INTO categories (
 			name,
-			description
+			description,
 			image_url
 		) VALUES ($1,$2,$3)
 		RETURNING id;
