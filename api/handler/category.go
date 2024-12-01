@@ -62,10 +62,14 @@ func (h *Handler) CreateCategory(c *gin.Context) {
 		})
 		return
 	}
+	name := c.PostForm("name")
+	description := c.PostForm("is_primary")
 
 	// Yuklangan fayl URL ni modelga kiritish
 	entity.ImageUrl = filePath
-
+	entity.Name = name
+	entity.Description=description
+	
 	// Kategoriyani saqlash
 	id, err := h.strg.Category().Create(context.Background(), &entity)
 	if err != nil {
