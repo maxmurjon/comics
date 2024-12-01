@@ -74,6 +74,7 @@ type ProductRepoI interface {
 	GetList(ctx context.Context, req *models.GetListProductRequest) (resp *models.GetListProductResponse, err error)
 	Update(ctx context.Context, req *models.UpdateProduct) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
+	GetProducts(ctx context.Context) ([]models.ProductInfo, error)
 }
 
 type ProductImageRepoI interface {
@@ -96,6 +97,7 @@ type ProductAttributeRepoI interface {
 	Create(ctx context.Context, req *models.CreateProductAttribute) (*models.PrimaryKey, error)
 	GetByID(ctx context.Context, req *models.PrimaryKey) (*models.ProductAttribute, error)
 	GetList(ctx context.Context, req *models.GetListProductAttributeRequest) (resp *models.GetListProductAttributeResponse, err error)
+	GetByProductID(ctx context.Context, req *models.PrimaryKey) (*models.ProductAttribute, error)
 	Update(ctx context.Context, req *models.UpdateProductAttribute) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
 }

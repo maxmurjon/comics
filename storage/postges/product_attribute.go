@@ -67,6 +67,35 @@ func (u *productAttributeRepo) GetByID(ctx context.Context, req *models.PrimaryK
 	return res, nil
 }
 
+func (u *productAttributeRepo) GetByProductID(ctx context.Context, req *models.PrimaryKey) (*models.ProductAttribute, error) {
+	res := &models.ProductAttribute{}
+	query := `SELECT
+		id,
+		product_id,
+		attribute_id,
+		value,
+		created_at,
+		updated_at
+	FROM
+		product_attributes
+	WHERE
+		product_id = $1`
+
+	err := u.db.QueryRow(ctx, query, req.Id).Scan(
+		&res.ID,
+		&res.ProductID,
+		&res.AttributeID,
+		&res.Value,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
 // GetList retrieves a list of productAttributes with pagination and optional search functionality.
 func (u *productAttributeRepo) GetList(ctx context.Context, req *models.GetListProductAttributeRequest) (*models.GetListProductAttributeResponse, error) {
 	res := &models.GetListProductAttributeResponse{}

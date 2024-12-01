@@ -4,17 +4,20 @@ type Category struct {
 	ID          string `json:"id"`
 	Name    string `json:"name"`
 	Description string `json:"description"`
+	ImageUrl string `json:"image_url"`
 }
 
 type CreateCategory struct {
 	Name    string `json:"name"`
 	Description string `json:"description"`
+	ImageUrl string `json:"image_url"`
 }
 
 type UpdateCategory struct {
 	ID          string `json:"id"`
 	Name    string `json:"name"`
 	Description string `json:"description"`
+	ImageUrl string `json:"image_url"`
 }
 
 type GetListCategoryRequest struct {

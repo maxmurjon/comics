@@ -2,11 +2,21 @@ package models
 
 import "time"
 
-type ProductList struct {
-	Products   []*Product      `json:"products"`
-	ImageURLs  []*ProductImage `json:"image_urls"`
-	Categories []*Category     `json:"categories"`
-	Attributes []*Attribute    `json:"attributes"`
+type ProductInfo struct {
+	ID            int           `json:"id"`
+	Name          string        `json:"name"`
+	TranslatedName string       `json:"translated_name,omitempty"`
+	Description   string        `json:"description"`
+	TranslatedDescription string `json:"translated_description,omitempty"`
+	Price         float64       `json:"price"`
+	StockQuantity int           `json:"stock_quantity"`
+	ImageURLs     []string      `json:"image_urls"`
+	Categories    []Category    `json:"categories"`
+	Attributes    []Attribute   `json:"attributes"`
+	AverageRating float64       `json:"average_rating"`
+	ReviewsCount  int           `json:"reviews_count"`
+	CreatedAt     time.Time     `json:"created_at"`
+	UpdatedAt     time.Time     `json:"updated_at"`
 }
 
 type Product struct {

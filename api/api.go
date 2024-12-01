@@ -88,7 +88,7 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 
 
 	// Special endpoints 
-	r.GET("/productslist", h.GetProductList)
+	// r.GET("/productslist", h.GetProductList)
 	
 
 }

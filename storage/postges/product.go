@@ -4,6 +4,7 @@ import (
 	"comics/models"
 	"comics/pkg/helper/helper"
 	"context"
+	"encoding/json"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -193,4 +194,73 @@ func (u *productRepo) Delete(ctx context.Context, req *models.PrimaryKey) (int64
 	rowsAffected := result.RowsAffected()
 
 	return rowsAffected, err
+}
+
+// Special operation
+func (u *productRepo) GetProducts(ctx context.Context) ([]models.ProductInfo, error) {
+	query := `
+    SELECT 
+        p.id,
+        p.name,
+        pt.name AS translated_name,
+        p.description,
+        pt.description AS translated_description,
+        p.price,
+        p.stock_quantity,
+        p.created_at,
+        p.updated_at,
+        COALESCE(json_agg(DISTINCT pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL), '[]') AS image_urls,
+        COALESCE(json_agg(DISTINCT jsonb_build_object('id', c.id, 'name', c.name)) FILTER (WHERE c.id IS NOT NULL), '[]') AS categories,
+        COALESCE(json_agg(DISTINCT jsonb_build_object('name', a.name, 'value', a.value)) FILTER (WHERE a.name IS NOT NULL), '[]') AS attributes,
+        COALESCE(AVG(r.rating), 0) AS average_rating,
+        COUNT(r.id) AS reviews_count
+    FROM products p
+    LEFT JOIN product_images pi ON pi.product_id = p.id
+    LEFT JOIN product_categories pc ON pc.product_id = p.id
+    LEFT JOIN categories c ON c.id = pc.category_id
+    LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.language_id = 1 -- Example: English
+    LEFT JOIN attributes a ON a.product_id = p.id
+    LEFT JOIN reviews r ON r.product_id = p.id
+    GROUP BY p.id, pt.name, pt.description;
+    `
+
+	rows, err := u.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []models.ProductInfo
+
+	for rows.Next() {
+		var product models.ProductInfo
+		var imageURLs, categories, attributes []byte
+
+		err := rows.Scan(
+			&product.ID, &product.Name, &product.TranslatedName,
+			&product.Description, &product.TranslatedDescription,
+			&product.Price, &product.StockQuantity,
+			&product.CreatedAt, &product.UpdatedAt,
+			&imageURLs, &categories, &attributes,
+			&product.AverageRating, &product.ReviewsCount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// JSON massivlarini deserializatsiya qilish
+		if err := json.Unmarshal(imageURLs, &product.ImageURLs); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(categories, &product.Categories); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(attributes, &product.Attributes); err != nil {
+			return nil, err
+		}
+
+		products = append(products, product)
+	}
+
+	return products, nil
 }

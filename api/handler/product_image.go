@@ -19,7 +19,6 @@ import (
 // const uploadDir = "./uploads/products/"
 
 func (h *Handler) CreateProductImage(c *gin.Context) {
-	fmt.Println("Hello")
 	file, fileHeader, err := c.Request.FormFile("image")
 	if err != nil {
 		fmt.Println("err 1",err)
