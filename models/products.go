@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+type ProductList struct {
+	Products   []*Product      `json:"products"`
+	ImageURLs  []*ProductImage `json:"image_urls"`
+	Categories []*Category     `json:"categories"`
+	Attributes []*Attribute    `json:"attributes"`
+}
+
 type Product struct {
 	ID            int       `json:"id"`
 	Name          string    `json:"name"`
@@ -12,20 +19,19 @@ type Product struct {
 	UpdatedAt     time.Time `json:"updated_at"`     // Yangilangan vaqt
 }
 
-
 type CreateProduct struct {
-	Name          string    `json:"name"`
-	Description   string    `json:"description"`
-	Price         float64   `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
-	StockQuantity int       `json:"stock_quantity"` // Ombordagi mahsulot miqdori
+	Name          string  `json:"name"`
+	Description   string  `json:"description"`
+	Price         float64 `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
+	StockQuantity int     `json:"stock_quantity"` // Ombordagi mahsulot miqdori
 }
 
 type UpdateProduct struct {
-	ID            int       `json:"id"`
-	Name          string    `json:"name"`
-	Description   string    `json:"description"`
-	Price         float64   `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
-	StockQuantity int       `json:"stock_quantity"` // Ombordagi mahsulot miqdori
+	ID            int     `json:"id"`
+	Name          string  `json:"name"`
+	Description   string  `json:"description"`
+	Price         float64 `json:"price"`          // NUMERIC(10, 2) uchun float64 ishlatiladi
+	StockQuantity int     `json:"stock_quantity"` // Ombordagi mahsulot miqdori
 }
 
 type GetListProductRequest struct {
@@ -35,6 +41,6 @@ type GetListProductRequest struct {
 }
 
 type GetListProductResponse struct {
-	Count int     `json:"count"`
+	Count    int        `json:"count"`
 	Products []*Product `json:"products"`
 }

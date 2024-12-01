@@ -86,6 +86,11 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.GET("/productimage/:id", h.GetProductImagesByIDHandler)
 	r.DELETE("/deleteproductimage/:id", h.DeleteProductImage)
 
+
+	// Special endpoints 
+	r.GET("/productslist", h.GetProductList)
+	
+
 }
 
 func customCORSMiddleware() gin.HandlerFunc {
