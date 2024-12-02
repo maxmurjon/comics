@@ -74,7 +74,6 @@ type ProductRepoI interface {
 	GetList(ctx context.Context, req *models.GetListProductRequest) (resp *models.GetListProductResponse, err error)
 	Update(ctx context.Context, req *models.UpdateProduct) (int64, error)
 	Delete(ctx context.Context, req *models.PrimaryKey) (int64, error)
-	GetProducts(ctx context.Context) ([]models.ProductInfo, error)
 }
 
 type ProductImageRepoI interface {

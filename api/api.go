@@ -87,8 +87,8 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.DELETE("/deleteproductimage/:id", h.DeleteProductImage)
 
 
-	// Special endpoints 
-	// r.GET("/productslist", h.GetProductList)
+	// Special endpointls 
+	r.GET("/productsist", h.GetProductList)
 	
 
 }

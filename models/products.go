@@ -3,20 +3,15 @@ package models
 import "time"
 
 type ProductInfo struct {
-	ID            int           `json:"id"`
-	Name          string        `json:"name"`
-	TranslatedName string       `json:"translated_name,omitempty"`
-	Description   string        `json:"description"`
-	TranslatedDescription string `json:"translated_description,omitempty"`
-	Price         float64       `json:"price"`
-	StockQuantity int           `json:"stock_quantity"`
-	ImageURLs     []string      `json:"image_urls"`
-	Categories    []Category    `json:"categories"`
-	Attributes    []Attribute   `json:"attributes"`
-	AverageRating float64       `json:"average_rating"`
-	ReviewsCount  int           `json:"reviews_count"`
-	CreatedAt     time.Time     `json:"created_at"`
-	UpdatedAt     time.Time     `json:"updated_at"`
+	ID            int              `json:"id"`
+	Name          string           `json:"name"`
+	Description   string           `json:"description"`
+	Price         float64          `json:"price"`
+	StockQuantity int              `json:"stock_quantity"`
+	CreatedAt     time.Time        `json:"created_at"`
+	UpdatedAt     time.Time        `json:"updated_at"`
+	Images        []ProductImage   `json:"images"`
+	Categories    []Category       `json:"categories"`
 }
 
 type Product struct {
@@ -52,5 +47,5 @@ type GetListProductRequest struct {
 
 type GetListProductResponse struct {
 	Count    int        `json:"count"`
-	Products []*Product `json:"products"`
+	Products []*ProductInfo `json:"products"`
 }
