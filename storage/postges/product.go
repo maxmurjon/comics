@@ -4,8 +4,6 @@ import (
 	"comics/models"
 	"comics/pkg/helper/helper"
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -80,88 +78,76 @@ func (u *productRepo) GetByID(ctx context.Context, req *models.PrimaryKey) (*mod
 // GetList retrieves a list of roles with pagination and optional search functionality.
 func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductRequest) (*models.GetListProductResponse, error) {
 	res := &models.GetListProductResponse{}
-	query := `
-		WITH product_data AS (
-			SELECT
-				p.id,
-				p.name,
-				p.description,
-				p.price,
-				p.stock_quantity,
-				p.created_at,
-				p.updated_at,
-				COALESCE(json_agg(DISTINCT jsonb_build_object(
-					'id', pi.id,
-					'url', pi.image_url,
-					'is_primary', pi.is_primary
-				)) FILTER (WHERE pi.id IS NOT NULL), '[]') AS images,
-				COALESCE(json_agg(DISTINCT jsonb_build_object(
-					'id', c.id,
-					'name', c.name,
-					'description', c.description
-				)) FILTER (WHERE c.id IS NOT NULL), '[]') AS categories
-			FROM products p
-			LEFT JOIN product_images pi ON pi.product_id = p.id
-			LEFT JOIN product_categories pc ON pc.product_id = p.id
-			LEFT JOIN categories c ON c.id = pc.category_id
-			GROUP BY p.id
-		)
-		SELECT
-			COUNT(*) OVER() AS total_count,
-			pd.*
-		FROM product_data pd
-		ORDER BY pd.created_at DESC
-		OFFSET $1
-		LIMIT $2;
-	`
+	params := make(map[string]interface{})
+	var arr []interface{}
 
-	rows, err := u.db.Query(ctx, query, req.Offset, req.Limit)
+	query := `SELECT
+		id,
+		name,
+		description,
+		price,
+		stock_quantity,
+		created_at,
+		updated_at
+	FROM
+		products`
+	filter := " WHERE 1=1"
+	offset := " OFFSET 0"
+	limit := " LIMIT 10"
+
+	// Implement search on productImages_name only
+	if len(req.Search) > 0 {
+		params["search"] = req.Search
+		filter += " AND name ILIKE '%' || :search || '%'"
+	}
+
+	if req.Offset > 0 {
+		params["offset"] = req.Offset
+		offset = " OFFSET :offset"
+	}
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+		limit = " LIMIT :limit"
+	}
+
+	// Count query
+	cQ := `SELECT count(1) FROM products` + filter
+	cQ, arr = helper.ReplaceQueryParams(cQ, params)
+	err := u.db.QueryRow(ctx, cQ, arr...).Scan(
+		&res.Count,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("querying products: %w", err)
+		return res, err
+	}
+
+	// Main query for retrieving productImagess
+	q := query + filter + offset + limit
+	q, arr = helper.ReplaceQueryParams(q, params)
+	rows, err := u.db.Query(ctx, q, arr...)
+	if err != nil {
+		return res, err
 	}
 	defer rows.Close()
 
-	// Prepare to collect products
-	var products []*models.ProductInfo
-
 	for rows.Next() {
-		var product models.ProductInfo
-		var images, categories []byte
-
-		// Scan the row into variables
-		err := rows.Scan(
-			&res.Count,
-			&product.ID,
-			&product.Name,
-			&product.Description,
-			&product.Price,
-			&product.StockQuantity,
-			&product.CreatedAt,
-			&product.UpdatedAt,
-			&images,
-			&categories,
+		obj := &models.Product{}
+		err = rows.Scan(
+			&obj.ID,
+			&obj.Name,
+			&obj.Description,
+			&obj.Price,
+			&obj.StockQuantity,
+			&obj.CreatedAt,
+			&obj.UpdatedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("scanning product row: %w", err)
+			return res, err
 		}
 
-		// Parse JSONB data
-		if err := json.Unmarshal(images, &product.Images); err != nil {
-			return nil, fmt.Errorf("unmarshalling images: %w", err)
-		}
-		if err := json.Unmarshal(categories, &product.Categories); err != nil {
-			return nil, fmt.Errorf("unmarshalling categories: %w", err)
-		}
-
-		products = append(products, &product)
+		res.Products = append(res.Products, obj)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("iterating rows: %w", err)
-	}
-
-	// Assign result
-	res.Products = products
 	return res, nil
 }
 

@@ -47,5 +47,5 @@ type GetListProductRequest struct {
 
 type GetListProductResponse struct {
 	Count    int        `json:"count"`
-	Products []*ProductInfo `json:"products"`
+	Products []*Product `json:"products"`
 }
