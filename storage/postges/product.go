@@ -5,6 +5,7 @@ import (
 	"comics/pkg/helper/helper"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -116,16 +117,18 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 
 	rows, err := u.db.Query(ctx, query, req.Offset, req.Limit)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("querying products: %w", err)
 	}
 	defer rows.Close()
 
+	// Prepare to collect products
 	var products []*models.ProductInfo
 
 	for rows.Next() {
 		var product models.ProductInfo
 		var images, categories []byte
 
+		// Scan the row into variables
 		err := rows.Scan(
 			&res.Count,
 			&product.ID,
@@ -139,19 +142,25 @@ func (u *productRepo) GetList(ctx context.Context, req *models.GetListProductReq
 			&categories,
 		)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("scanning product row: %w", err)
 		}
 
+		// Parse JSONB data
 		if err := json.Unmarshal(images, &product.Images); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unmarshalling images: %w", err)
 		}
 		if err := json.Unmarshal(categories, &product.Categories); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unmarshalling categories: %w", err)
 		}
 
 		products = append(products, &product)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating rows: %w", err)
+	}
+
+	// Assign result
 	res.Products = products
 	return res, nil
 }
