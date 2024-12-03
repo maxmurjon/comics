@@ -109,7 +109,7 @@ func (h *Handler) Login(c *gin.Context) {
 		"first_name":   resp.FirstName,
 		"login":        resp.LastName,
 		"phone_number": resp.PhoneNumber,
-		"password":     resp.Password,
+		"password":     res	p.Password,
 		"created_at":   resp.CreatedAt,
 		"updated_at":   resp.UpdatedAt,
 		"role":         role,
@@ -124,55 +124,3 @@ func (h *Handler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, models.LoginResponse{Token: token, UserData: resp})
 }
-
-// func (h *Handler) UploadImage(c *gin.Context) {
-// 	// comics_id ni olish
-// 	comicsId := c.PostForm("comics_id")
-// 	if comicsId == "" {
-// 		c.JSON(http.StatusBadRequest, models.DefaultError{
-// 			Message: "Comics ID is required",
-// 		})
-// 		return
-// 	}
-
-// 	intId, _ := strconv.Atoi(comicsId)
-
-// 	// rasmni olish
-// 	file, _ := c.FormFile("image")
-// 	if file == nil {
-// 		c.JSON(http.StatusBadRequest, models.DefaultError{
-// 			Message: "Image is required",
-// 		})
-// 		return
-// 	}
-
-// 	// Faylni serverga saqlash
-// 	filePath := fmt.Sprintf("uploads/%s", file.Filename) // Faylni serverga saqlash yo'li
-// 	if err := c.SaveUploadedFile(file, filePath); err != nil {
-// 		c.JSON(http.StatusInternalServerError, models.DefaultError{
-// 			Message: "Failed to save image: " + err.Error(),
-// 		})
-// 		return
-// 	}
-
-// 	// Comics ID va rasm yo'lini ma'lumotlar bazasiga saqlash yoki ishlatish
-// 	// Misol: comicsId va filePathni saqlash
-// 	// err := h.strg.Comics().SaveImageForComics(context.Background(), comicsId, filePath)
-
-// 	// id, err := h.strg.ComicsPages().Create(context.Background(), &models.CreateComicsPages{ComicId: intId, PageNumber: 1, PageUrl: filePath})
-// 	// if err != nil {
-// 	// 	c.JSON(http.StatusInternalServerError, models.DefaultError{
-// 	// 		Message: "Error saving image for comics: " + err.Error(),
-// 	// 	})
-// 	// 	return
-// 	// }
-
-// 	// comics_page, _ := h.strg.ComicsPages().GetByID(context.Background(), &id)
-
-// 	// Yuborilgan rasmni tasdiqlash
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"message":   "Image uploaded successfully",
-// 		"image_url": filePath,
-// 		"comics_id": comics_page,
-// 	})
-// }
