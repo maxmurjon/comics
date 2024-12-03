@@ -109,7 +109,7 @@ func (h *Handler) Login(c *gin.Context) {
 		"first_name":   resp.FirstName,
 		"login":        resp.LastName,
 		"phone_number": resp.PhoneNumber,
-		"password":     res	p.Password,
+		"password":     resp.Password,
 		"created_at":   resp.CreatedAt,
 		"updated_at":   resp.UpdatedAt,
 		"role":         role,
