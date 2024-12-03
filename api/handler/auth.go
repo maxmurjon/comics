@@ -18,7 +18,7 @@ func (h *Handler) Register(c *gin.Context) {
 	err := c.ShouldBindJSON(&createUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.DefaultError{
-			Message: "Register User : " + err.Error(),
+			Message: "Register User: " + err.Error(),
 		})
 		return
 	}
