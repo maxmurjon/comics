@@ -71,6 +71,7 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 func (h *Handler) GetProductsList(c *gin.Context) {
 	// Retrieve the list of Products (offset and limit can be implemented later)
 	resp, err := h.strg.Product().GetList(context.Background(), &models.GetListProductRequest{})
+	fmt.Println(resp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.DefaultError{
 			Message: "Failed to retrieve Product list: " + err.Error(),
