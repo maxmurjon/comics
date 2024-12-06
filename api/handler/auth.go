@@ -5,7 +5,6 @@ import (
 	"comics/models"
 	"comics/pkg/helper/helper"
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
