@@ -15,24 +15,27 @@ import (
 func (h *Handler) Register(c *gin.Context) {
 	var createUser models.CreateUser
 
+	// JSONni bind qilish
 	err := c.ShouldBindJSON(&createUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.DefaultError{
-			Message: "Register User: " + err.Error(),
+			Message: "Error parsing registration data: " + err.Error(),
 		})
 		return
 	}
 
+	// Parolni hash qilish
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(createUser.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Error Hashing User's password: " + err.Error(),
+			Message: "Error hashing password: " + err.Error(),
 		})
 		return
 	}
 
 	createUser.Password = string(hashedPassword)
 
+	// Foydalanuvchini yaratish
 	userId, err := h.strg.User().Create(context.Background(), &createUser)
 	if err != nil {
 		if err.Error() == `ERROR: duplicate key value violates unique constraint "users_login_key" (SQLSTATE 23505)` {
@@ -46,14 +49,8 @@ func (h *Handler) Register(c *gin.Context) {
 		})
 		return
 	}
-	// err = h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id, RoleId: 2})
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, models.DefaultError{
-	// 		Message: "Error assigning role to user: " + err.Error(),
-	// 	})
-	// 	return
-	// }
 
+	// Foydalanuvchi ma'lumotlarini olish
 	user, err := h.strg.User().GetByID(context.Background(), userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.DefaultError{
@@ -62,65 +59,57 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
+	// Yaratilgan foydalanuvchini qaytarish
 	c.JSON(http.StatusCreated, user)
 }
 
 func (h *Handler) Login(c *gin.Context) {
-
 	var login models.Login
 
-	err := c.ShouldBindJSON(&login) // parse req body to given type struct
+	// JSONni bind qilish
+	err := c.ShouldBindJSON(&login)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "Parsing data error"})
+		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "Error parsing login data: " + err.Error()})
 		return
 	}
 
+	// Foydalanuvchini telefon raqami bo'yicha olish
 	resp, err := h.strg.User().GetByPhone(context.Background(), &login)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID" + "\nuser not found please register first"})
+			c.JSON(http.StatusBadRequest, models.DefaultError{Message: "User not found, please register first"})
 			return
 		}
-
-		fmt.Println(c, "storage.user.getByID", http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, models.DefaultError{Message: "Error fetching user data: " + err.Error()})
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(login.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.DefaultError{
-			Message: "Error Hashing User's password: " + err.Error(),
-		})
-		return
-	}
-
-	login.Password = string(hashedPassword)
-
-
+	// Parollarni taqqoslash
 	err = bcrypt.CompareHashAndPassword([]byte(resp.Password), []byte(login.Password))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID \ncredentials are wrong"})
+		c.JSON(http.StatusUnauthorized, models.DefaultError{Message: "Invalid credentials"})
 		return
 	}
 
+	// Foydalanuvchining roli
 	roleId, err := h.strg.UserRole().GetByID(context.Background(), resp.Id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID \ncredentials are wrong"})
+		c.JSON(http.StatusInternalServerError, models.DefaultError{Message: "Error fetching user role: " + err.Error()})
 		return
 	}
 
 	role, err := h.strg.Role().GetByID(context.Background(), &models.PrimaryKey{Id: roleId.RoleId})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID \ncredentials are wrong"})
+		c.JSON(http.StatusInternalServerError, models.DefaultError{Message: "Error fetching role data: " + err.Error()})
 		return
 	}
 
+	// JWT token yaratish
 	data := map[string]interface{}{
 		"id":           resp.Id,
 		"first_name":   resp.FirstName,
-		"login":        resp.LastName,
+		"last_name":    resp.LastName,
 		"phone_number": resp.PhoneNumber,
-		"password":     resp.Password,
 		"created_at":   resp.CreatedAt,
 		"updated_at":   resp.UpdatedAt,
 		"role":         role,
@@ -128,10 +117,10 @@ func (h *Handler) Login(c *gin.Context) {
 
 	token, err := helper.GenerateJWT(data, config.TimeExpiredAt, h.cfg.SekretKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID"})
+		c.JSON(http.StatusInternalServerError, models.DefaultError{Message: "Error generating JWT token: " + err.Error()})
 		return
 	}
-	// var bearer = "Bearer " + token
 
-	c.JSON(http.StatusCreated, models.LoginResponse{Token: token, UserData: resp})
+	// JWT token va foydalanuvchi ma'lumotlarini qaytarish
+	c.JSON(http.StatusOK, models.LoginResponse{Token: token, UserData: resp})
 }
