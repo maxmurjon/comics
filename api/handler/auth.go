@@ -86,6 +86,17 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(login.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.DefaultError{
+			Message: "Error Hashing User's password: " + err.Error(),
+		})
+		return
+	}
+
+	login.Password = string(hashedPassword)
+
+
 	err = bcrypt.CompareHashAndPassword([]byte(resp.Password), []byte(login.Password))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.DefaultError{Message: "storage.user.getByID \ncredentials are wrong"})
