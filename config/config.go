@@ -47,7 +47,7 @@ func Load() *Config {
 	}
 
 	cfg := Config{}
-	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "3.126.186.207"))
+	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "3.126.186.207/"))
 	cfg.Postgres = Postgres{
 		Host:     cast.ToString(getOrDefaultValue("POSTGRES_HOST", "3.126.186.207")),
 		Port:     cast.ToInt(getOrDefaultValue("POSTGRES_PORT", "5432")),
