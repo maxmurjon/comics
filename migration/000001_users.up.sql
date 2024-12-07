@@ -3,6 +3,7 @@ CREATE TABLE users (
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone_number VARCHAR(15) UNIQUE NOT NULL,
+    image_url TEXT,
     password_hash TEXT NOT NULL,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW(),

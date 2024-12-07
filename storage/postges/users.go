@@ -4,6 +4,7 @@ import (
 	"comics/models"
 	"comics/pkg/helper/helper"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 
@@ -56,6 +57,7 @@ func (u *userRepo) GetByID(ctx context.Context, req *models.UserPrimaryKey) (*mo
             last_name,
             password_hash,
             phone_number,
+			image_url,
             created_at,
             updated_at
         FROM
@@ -69,6 +71,7 @@ func (u *userRepo) GetByID(ctx context.Context, req *models.UserPrimaryKey) (*mo
 		&res.LastName,
 		&res.Password,
 		&res.PhoneNumber,
+		&res.ImageUrl,
 		&res.CreatedAt, // created_at as time.Time
 		&res.UpdatedAt, // updated_at as time.Time
 	)
@@ -89,6 +92,7 @@ func (u *userRepo) GetList(ctx context.Context, req *models.GetListUserRequest) 
 		last_name,
 		password_hash,
 		phone_number,
+		image_url,
 		created_at,
 		updated_at
 	FROM
@@ -141,6 +145,7 @@ func (u *userRepo) GetList(ctx context.Context, req *models.GetListUserRequest) 
 			&obj.LastName,
 			&obj.Password,
 			&obj.PhoneNumber,
+			&obj.ImageUrl,
 			&obj.CreatedAt,
 			&obj.UpdatedAt,
 		)
@@ -156,33 +161,56 @@ func (u *userRepo) GetList(ctx context.Context, req *models.GetListUserRequest) 
 }
 
 func (u *userRepo) Update(ctx context.Context, req *models.UpdateUser) (id int64, err error) {
-	query := `UPDATE "users" SET
-		id = :id,
-		first_name = :first_name,
-		last_name = :last_name,
-		password_hash = :password_hash,
-		phone_number = :phone_number,
-		updated_at = now()
-	WHERE
-		id = :id`
+	query := `UPDATE "users" SET `
+	params := []interface{}{}
+	counter := 1
 
-	params := map[string]interface{}{
-		"id":            req.Id,
-		"first_name":    req.FirstName,
-		"last_name":     req.LastName,
-		"password_hash": req.Password,
-		"phone_number":  req.PhoneNumber,
+	if req.FirstName != nil {
+		query += `first_name = $` + fmt.Sprint(counter) + `, `
+		params = append(params, *req.FirstName)
+		counter++
 	}
 
-	q, arr := helper.ReplaceQueryParams(query, params)
-	result, err := u.db.Exec(ctx, q, arr...)
+	if req.LastName != nil {
+		query += `last_name = $` + fmt.Sprint(counter) + `, `
+		params = append(params, *req.LastName)
+		counter++
+	}
+
+	if req.Password != nil {
+		query += `password_hash = $` + fmt.Sprint(counter) + `, `
+		params = append(params, *req.Password)
+		counter++
+	}
+
+	if req.ImageUrl != nil {
+		query += `image_url = $` + fmt.Sprint(counter) + `, `
+		params = append(params, *req.ImageUrl)
+		counter++
+	}
+
+	if req.PhoneNumber != nil {
+		query += `phone_number = $` + fmt.Sprint(counter) + `, `
+		params = append(params, *req.PhoneNumber)
+		counter++
+	}
+
+	// Trailing comma removal and add `updated_at`
+	query = query[:len(query)-2] + `, updated_at = now()`
+
+	// Add WHERE clause
+	query += ` WHERE id = $` + fmt.Sprint(counter)
+	params = append(params, req.Id)
+
+	// Execute the query
+	result, err := u.db.Exec(ctx, query, params...)
 	if err != nil {
 		return 0, err
 	}
 
 	rowsAffected := result.RowsAffected()
 
-	return rowsAffected, err
+	return rowsAffected, nil
 }
 
 func (u *userRepo) Delete(ctx context.Context, req *models.UserPrimaryKey) (id int64, err error) {
