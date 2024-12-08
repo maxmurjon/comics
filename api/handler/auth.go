@@ -49,7 +49,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	err=h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id,RoleId: 1})
+	err = h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id, RoleId: 1})
 	if err != nil {
 		if err.Error() == `ERROR: duplicate key value violates unique constraint "users_login_key" (SQLSTATE 23505)` {
 			c.JSON(http.StatusConflict, models.DefaultError{
@@ -63,7 +63,6 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	
 	// Foydalanuvchi ma'lumotlarini olish
 	user, err := h.strg.User().GetByID(context.Background(), userId)
 	if err != nil {
@@ -124,6 +123,7 @@ func (h *Handler) Login(c *gin.Context) {
 		"first_name":   resp.FirstName,
 		"last_name":    resp.LastName,
 		"phone_number": resp.PhoneNumber,
+		"image_url":    resp.ImageUrl,
 		"created_at":   resp.CreatedAt,
 		"updated_at":   resp.UpdatedAt,
 		"role":         role,
