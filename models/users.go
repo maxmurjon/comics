@@ -26,7 +26,7 @@ type CreateUser struct {
 }
 
 type UpdateUser struct {
-	Id          int      `json:"id"`
+	Id          string      `json:"id"`
 	FirstName   *string  `json:"first_name,omitempty"`
 	LastName    *string  `json:"last_name,omitempty"`
 	Password    *string  `json:"password_hash,omitempty"`
