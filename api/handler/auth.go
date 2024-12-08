@@ -49,7 +49,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	err=h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id,RoleId: 2})
+	err=h.strg.UserRole().Create(context.Background(), &models.CreateUserRole{UserId: userId.Id,RoleId: 1})
 	if err != nil {
 		if err.Error() == `ERROR: duplicate key value violates unique constraint "users_login_key" (SQLSTATE 23505)` {
 			c.JSON(http.StatusConflict, models.DefaultError{
