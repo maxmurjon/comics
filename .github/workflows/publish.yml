@@ -16,7 +16,6 @@ env:
   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
   DATABASE_USER: ${{ secrets.DATABASE_USER }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-  UPLOADS_DIR: /srv/uploads/products/  # Fayllarni saqlash uchun papka
 
 jobs:
   build_push_deploy:
@@ -43,21 +42,11 @@ jobs:
           username: ${{ env.SERVER_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            # Serverdagi papkalarni tayyorlash
-            mkdir -p $UPLOADS_DIR
-
-            # Eski konteynerni to'xtatish va o'chirish
             docker stop blog || true
             docker rm blog || true
-
-            # Eski rasmlarni o'chirish
             docker image rm ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }} || true
+            docker run -d --name blog -e POSTGRES_HOST=${{ env.DATABASE_HOST }} -e POSTGRES_USER=${{ env.DATABASE_USER }} -e POSTGRES_PASSWORD=${{ env.DATABASE_PASSWORD }} -p 8000:8000 ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
 
-            # Yangi konteynerni ishga tushirish va fayllarni ulash
-            docker run -d --name blog \
-              -e POSTGRES_HOST=${{ env.DATABASE_HOST }} \
-              -e POSTGRES_USER=${{ env.DATABASE_USER }} \
-              -e POSTGRES_PASSWORD=${{ env.DATABASE_PASSWORD }} \
-              -p 8000:8000 \
-              -v $UPLOADS_DIR:/app/uploads/products \ # Fayllarni saqlash uchun volume ulash
-              ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+
+
+            
