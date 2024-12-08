@@ -87,7 +87,7 @@ func SetUpAPI(r *gin.Engine, h handler.Handler, cfg config.Config) {
 	r.DELETE("/deleteproductimage/:id", h.DeleteProductImage)
 
 	r.POST("/uploadimage",h.CreateUserImage)
-
+	r.GET("/profile",h.AuthMiddleware(),h.GetUsersByIDHandler)
 }
 
 func customCORSMiddleware() gin.HandlerFunc {
