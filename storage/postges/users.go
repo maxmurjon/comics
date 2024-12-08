@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -45,7 +44,6 @@ func (u *userRepo) Create(ctx context.Context, req *models.CreateUser) (*models.
 	}
 
 	return pKey, err
-
 }
 
 func (u *userRepo) GetByID(ctx context.Context, req *models.UserPrimaryKey) (*models.User, error) {
@@ -139,13 +137,14 @@ func (u *userRepo) GetList(ctx context.Context, req *models.GetListUserRequest) 
 	for rows.Next() {
 		obj := &models.User{}
 
+		// Ensure ImageUrl is handled as a pointer to string
 		err = rows.Scan(
 			&obj.Id,
 			&obj.FirstName,
 			&obj.LastName,
 			&obj.Password,
 			&obj.PhoneNumber,
-			&obj.ImageUrl,
+			&obj.ImageUrl,  // Scan into *string
 			&obj.CreatedAt,
 			&obj.UpdatedAt,
 		)
