@@ -42,22 +42,22 @@ jobs:
           username: ${{ env.SERVER_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            # 1. Docker volumeni yaratish (bir marta ishlaydi, keyingi deploylarda mavjud bo'ladi)
-            docker volume create images-data || true
+  # 1. Docker volumeni yaratish
+  docker volume create images-data || true
 
-            # 2. Eski konteynerni to'xtatish va o'chirish
-            docker stop blog || true
-            docker rm blog || true
+  # 2. Eski konteynerni to'xtatish va o'chirish
+  docker stop blog || true
+  docker rm blog || true
 
-            # 3. Docker image'ni yangilash
-            docker image rm ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }} || true
+  # 3. Docker image'ni yangilash
+  docker image rm ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }} || true
 
-            # 4. Yangi konteynerni ishga tushirish va volume ulash
-            docker run -d \
-              --name blog \
-              -e POSTGRES_HOST=${{ env.DATABASE_HOST }} \
-              -e POSTGRES_USER=${{ env.DATABASE_USER }} \
-              -e POSTGRES_PASSWORD=${{ env.DATABASE_PASSWORD }} \
-              -v images-data:/app/images \  # Rasmlar uchun volume ulash
-              -p 8000:8000 \
-              $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+  # 4. Yangi konteynerni ishga tushirish va volume ulash
+  docker run -d \
+    --name blog \
+    -e POSTGRES_HOST=${{ env.DATABASE_HOST }} \
+    -e POSTGRES_USER=${{ env.DATABASE_USER }} \
+    -e POSTGRES_PASSWORD=${{ env.DATABASE_PASSWORD }} \
+    -v images-data:/app/images \
+    -p 8000:8000 \
+    $DOCKER_USERNAME/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
