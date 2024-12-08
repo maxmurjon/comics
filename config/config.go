@@ -47,15 +47,15 @@ func Load() *Config {
 	}
 
 	cfg := Config{}
-	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "18.153.65.158"))
+	cfg.ServerHost = cast.ToString(getOrDefaultValue("SERVER_HOST", "18.197.178.186"))
 	cfg.Postgres = Postgres{
-		Host:     cast.ToString(getOrDefaultValue("POSTGRES_HOST", "18.153.65.158")),
+		Host:     cast.ToString(getOrDefaultValue("POSTGRES_HOST", "18.197.178.186")),
 		Port:     cast.ToInt(getOrDefaultValue("POSTGRES_PORT", "5432")),
 		User:     cast.ToString(getOrDefaultValue("POSTGRES_USER", "maxmurjon")),
 		Password: cast.ToString(getOrDefaultValue("POSTGRES_PASSWORD", "max22012004")),
 		DataBase: cast.ToString(getOrDefaultValue("POSTGRES_DATABASE", "comics"))}
 	cfg.Redis = Redis{
-		Host:     cast.ToString(getOrDefaultValue("REDIS_HOST", "18.153.65.158")),
+		Host:     cast.ToString(getOrDefaultValue("REDIS_HOST", "18.197.178.186")),
 		Port:     cast.ToInt(getOrDefaultValue("REDIS_PORT", "5432")),
 		Password: cast.ToString(getOrDefaultValue("REDIS_PASSWORD", "max22012004")),
 		DataBase: cast.ToString(getOrDefaultValue("REDIS_DATABASE", "comics"))}
